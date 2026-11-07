@@ -22,17 +22,19 @@ export default function OrdersScreen() {
 
 function Orders({ business }: { business: Business }) {
   const { c, t, lang, scopeKey } = useApp();
-  const [tab, setTab] = useState<'draft' | 'open'>('draft');
+  const [picked, setPicked] = useState<'draft' | 'open' | null>(null);
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadOrders(business.id), scopeKey);
-  const rows = (data ?? []).filter((o) => o.status === tab);
   const drafts = (data ?? []).filter((o) => o.status === 'draft').length;
+  // Until the person picks a tab: show drafts if any are waiting, otherwise orders on the way.
+  const tab = picked ?? (drafts > 0 ? 'draft' : 'open');
+  const rows = (data ?? []).filter((o) => o.status === tab);
 
   return (
     <View style={{ flex: 1 }}>
       <View style={{ paddingHorizontal: space.lg, paddingBottom: space.md }}>
         <Segmented
           value={tab}
-          onChange={setTab}
+          onChange={setPicked}
           options={[
             { value: 'draft', label: drafts ? `${t.drafts} (${drafts})` : t.drafts },
             { value: 'open', label: t.open },

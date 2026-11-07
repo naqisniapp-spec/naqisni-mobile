@@ -185,16 +185,25 @@ export async function loadProductRows(businessId: string): Promise<ProductRow[]>
 }
 
 export async function loadAlerts(businessId: string, open: boolean): Promise<Alert[]> {
+  // stock_alerts has two foreign keys to products, so an embedded products(name)
+  // is ambiguous for PostgREST — read the names in a second query instead.
   let q = supabase
     .from('stock_alerts')
-    .select('id, product_id, severity, message, created_at, resolved_at, acknowledged, products(name)')
+    .select('id, product_id, severity, message, created_at, resolved_at, acknowledged')
     .eq('business_id', businessId)
     .order('created_at', { ascending: false })
     .limit(100);
   q = open ? q.is('resolved_at', null) : q.not('resolved_at', 'is', null);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
-  return (data ?? []) as unknown as Alert[];
+  const rows = data ?? [];
+  const ids = [...new Set(rows.map((a) => a.product_id as string))];
+  const names = new Map<string, string>();
+  if (ids.length) {
+    const { data: products } = await supabase.from('products').select('product_id, name').in('product_id', ids);
+    for (const p of products ?? []) names.set(p.product_id, p.name);
+  }
+  return rows.map((a) => ({ ...a, products: names.has(a.product_id) ? { name: names.get(a.product_id)! } : null })) as Alert[];
 }
 
 export async function acknowledgeAlert(id: string) {

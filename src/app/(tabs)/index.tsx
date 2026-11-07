@@ -25,10 +25,12 @@ function Overview({ business }: { business: Business }) {
   const { c, t, scopeKey } = useApp();
   const { data, error, loading, refreshing, refresh } = useLoad(
     async () => {
+      // Products are the core of this screen; alerts and orders are extras that
+      // should never blank it if one of them fails.
       const [rows, alerts, orders] = await Promise.all([
         loadProductRows(business.id),
-        loadAlerts(business.id, true),
-        loadOrders(business.id),
+        loadAlerts(business.id, true).catch(() => []),
+        loadOrders(business.id).catch(() => []),
       ]);
       return { rows, alerts, drafts: orders.filter((o) => o.status === 'draft') };
     },
