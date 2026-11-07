@@ -66,6 +66,12 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#10182B"
+    "backgroundColor": "#10182B",
+    "owner": "naqisnis-team",
+    "extra": {
+      "eas": {
+        "projectId": "6ceb9516-086a-430b-b222-2877fb506dc0"
+      }
+    }
   }
 }
