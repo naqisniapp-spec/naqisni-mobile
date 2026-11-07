@@ -3,12 +3,13 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
+import { Barcode, MagnifyingGlass } from '@/components/icons';
 import { ProductItem } from '@/components/product-item';
 import { ScreenHeader } from '@/components/screen-header';
 import { Empty, ErrorState, Loading, Text } from '@/components/ui';
 import { loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
-import { radius, space } from '@/lib/theme';
+import { palette, radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
 
@@ -23,11 +24,12 @@ export default function ProductsScreen() {
         right={
           <Pressable
             onPress={() => router.push('/scan')}
-            style={({ pressed }) => [styles.scanBtn, { backgroundColor: c.ink, opacity: pressed ? 0.8 : 1 }]}
+            style={({ pressed }) => [styles.scanBtn, { backgroundColor: palette.light.ink, opacity: pressed ? 0.8 : 1 }]}
             accessibilityRole="button"
             accessibilityLabel={t.scan}>
-            <Text size={14} weight="700" style={{ color: c.card }}>
-              ⌁ {t.scan}
+            <Barcode size={18} color={c.brand} weight="bold" />
+            <Text size={14} weight="600" style={{ color: '#FFFFFF' }}>
+              {t.scan}
             </Text>
           </Pressable>
         }
@@ -83,6 +85,8 @@ function Products({ business }: { business: Business }) {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
       ListHeaderComponent={
         <View style={{ marginBottom: space.md }}>
+          <View style={[styles.searchWrap, { backgroundColor: c.card, borderColor: c.hairline }]}>
+          <MagnifyingGlass size={18} color={c.slate} />
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -90,8 +94,9 @@ function Products({ business }: { business: Business }) {
             placeholderTextColor={c.slate}
             autoCorrect={false}
             clearButtonMode="while-editing"
-            style={[styles.search, { backgroundColor: c.card, borderColor: c.hairline, color: c.ink }]}
+            style={[styles.search, { color: c.ink }]}
           />
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm, paddingTop: space.md }}>
             {filters.map((f) => {
               const on = filter === f.value;
@@ -109,13 +114,14 @@ function Products({ business }: { business: Business }) {
           </ScrollView>
         </View>
       }
-      ListEmptyComponent={<Empty text={t.noProducts} />}
+      ListEmptyComponent={<Empty text={t.noProducts} icon={<MagnifyingGlass size={40} color={c.slate} weight="duotone" />} />}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  search: { minHeight: 46, borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.md, paddingHorizontal: space.lg, fontSize: 16 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 48, borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.md, paddingHorizontal: space.md },
+  search: { flex: 1, minHeight: 46, fontSize: 16 },
   pill: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth },
-  scanBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill },
+  scanBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: radius.pill },
 });

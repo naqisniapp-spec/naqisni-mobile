@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
+import { CheckCircle, TrendDown, Warning } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
 import { acknowledgeAlert, loadAlerts, type Business } from '@/lib/data';
@@ -61,14 +62,16 @@ function Alerts({ business }: { business: Business }) {
           keyExtractor={(a) => a.id}
           contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
-          ListEmptyComponent={<Empty text={t.noAlerts} />}
+          ListEmptyComponent={<Empty text={t.noAlerts} icon={<CheckCircle size={40} color={c.brandDeep} weight="duotone" />} />}
           renderItem={({ item: a }) => {
             const color = a.severity === 'critical' ? c.alert : a.severity === 'warning' ? c.amber : c.slate;
             const isSeen = a.acknowledged || seen.has(a.id);
             return (
               <Card onPress={() => router.push({ pathname: '/product/[id]', params: { id: a.product_id } })} style={{ marginBottom: space.sm }}>
                 <Row style={{ gap: space.md, alignItems: 'flex-start' }}>
-                  <View style={[styles.sev, { backgroundColor: color }]} />
+                  <View style={[styles.sevIcon, { backgroundColor: a.severity === 'critical' ? c.alertSoft : c.amberSoft }]}>
+                    {a.severity === 'critical' ? <Warning size={18} color={color} weight="fill" /> : <TrendDown size={18} color={color} weight="bold" />}
+                  </View>
                   <View style={{ flex: 1, gap: 4 }}>
                     <Text weight="600">{a.products?.name ?? '—'}</Text>
                     <Text tone="slate" size={14}>
@@ -102,6 +105,6 @@ function Alerts({ business }: { business: Business }) {
 }
 
 const styles = StyleSheet.create({
-  sev: { width: 4, alignSelf: 'stretch', borderRadius: 2 },
+  sevIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   ack: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, borderWidth: 1 },
 });

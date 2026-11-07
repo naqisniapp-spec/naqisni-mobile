@@ -21,6 +21,17 @@ import { useApp } from '@/providers/app-provider';
 
 type Tone = 'ink' | 'slate' | 'brand' | 'alert' | 'amber';
 
+/**
+ * IBM Plex Sans, like naqisni.com. Plex has no Arabic letters, so Arabic
+ * uses the phone's own font (which has good Arabic shapes).
+ */
+export function fontFor(weight: TextStyle['fontWeight'], lang: string): TextStyle {
+  if (lang === 'ar') return { fontWeight: weight };
+  const w = Number(weight ?? 400);
+  const family = w >= 700 ? 'IBMPlexSans_700Bold' : w >= 600 ? 'IBMPlexSans_600SemiBold' : w >= 500 ? 'IBMPlexSans_500Medium' : 'IBMPlexSans_400Regular';
+  return { fontFamily: family };
+}
+
 export function Text({
   tone = 'ink',
   size = 15,
@@ -28,13 +39,13 @@ export function Text({
   style,
   ...rest
 }: TextProps & { tone?: Tone; size?: number; weight?: TextStyle['fontWeight'] }) {
-  const { c } = useApp();
+  const { c, lang } = useApp();
   const color = { ink: c.ink, slate: c.slate, brand: c.brandDeep, alert: c.alert, amber: c.amber }[tone];
   return (
     <RNText
       {...rest}
       // Alignment follows the layout direction (RTL for Arabic) on its own.
-      style={[{ color, fontSize: size, fontWeight: weight }, style]}
+      style={[{ color, fontSize: size }, fontFor(weight, lang), style]}
     />
   );
 }
@@ -65,7 +76,7 @@ export function Button({
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
-  const { c } = useApp();
+  const { c, lang } = useApp();
   const bg = variant === 'primary' ? c.brand : variant === 'danger' ? c.alertSoft : c.card;
   const fg = variant === 'primary' ? c.onBrand : variant === 'danger' ? c.alert : c.ink;
   return (
@@ -81,7 +92,7 @@ export function Button({
         { backgroundColor: bg, borderColor: variant === 'secondary' ? c.hairline : bg, opacity: disabled ? 0.5 : pressed ? 0.8 : 1 },
         style,
       ]}>
-      {loading ? <ActivityIndicator color={fg} /> : <RNText style={{ color: fg, fontSize: 16, fontWeight: '600' }}>{title}</RNText>}
+      {loading ? <ActivityIndicator color={fg} /> : <RNText style={[{ color: fg, fontSize: 16 }, fontFor('600', lang)]}>{title}</RNText>}
     </Pressable>
   );
 }
@@ -97,19 +108,19 @@ export function riskColors(risk: Risk, c: ReturnType<typeof useApp>['c']) {
 }
 
 export function RiskChip({ risk }: { risk: Risk }) {
-  const { c, t } = useApp();
+  const { c, t, lang } = useApp();
   const label = { critical: t.reorderNow, warning: t.runningLow, ordered: t.onOrder, healthy: t.healthy, unset: t.noData }[risk];
   const { bg, fg } = riskColors(risk, c);
   return (
     <View style={[styles.chip, { backgroundColor: bg }]}>
       <View style={[styles.dot, { backgroundColor: fg }]} />
-      <RNText style={{ color: fg, fontSize: 12, fontWeight: '600' }}>{label}</RNText>
+      <RNText style={[{ color: fg, fontSize: 12 }, fontFor('600', lang)]}>{label}</RNText>
     </View>
   );
 }
 
 export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
-  const { c } = useApp();
+  const { c, lang } = useApp();
   return (
     <View style={[styles.segmented, { backgroundColor: c.hairline }]}>
       {options.map((o) => {
@@ -121,7 +132,7 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
             style={[styles.segment, on && { backgroundColor: c.card }]}
             accessibilityRole="button"
             accessibilityState={{ selected: on }}>
-            <RNText numberOfLines={1} style={{ color: on ? c.ink : c.slate, fontWeight: on ? '600' : '500', fontSize: 14 }}>
+            <RNText numberOfLines={1} style={[{ color: on ? c.ink : c.slate, fontSize: 14 }, fontFor(on ? '600' : '500', lang)]}>
               {o.label}
             </RNText>
           </Pressable>
@@ -160,9 +171,10 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry: () 
   );
 }
 
-export function Empty({ text }: { text: string }) {
+export function Empty({ text, icon }: { text: string; icon?: ReactNode }) {
   return (
-    <View style={{ paddingVertical: space.xxl, alignItems: 'center' }}>
+    <View style={{ paddingVertical: space.xxl * 1.5, alignItems: 'center', gap: space.md }}>
+      {icon}
       <Text tone="slate" style={{ textAlign: 'center' }}>
         {text}
       </Text>

@@ -1,8 +1,16 @@
+import {
+  IBMPlexSans_400Regular,
+  IBMPlexSans_500Medium,
+  IBMPlexSans_600SemiBold,
+  IBMPlexSans_700Bold,
+  useFonts,
+} from '@expo-google-fonts/ibm-plex-sans';
 import * as Notifications from 'expo-notifications';
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { Loading } from '@/components/ui';
@@ -13,27 +21,20 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function Navigator() {
   const { ready, session, business, lang, c, dark, t } = useApp();
-  const lastTap = Notifications.useLastNotificationResponse();
+  const [fontsLoaded, fontError] = useFonts({ IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold, IBMPlexSans_700Bold });
+  const fontsReady = fontsLoaded || Boolean(fontError);
 
   useEffect(() => {
-    if (ready) SplashScreen.hideAsync().catch(() => undefined);
-  }, [ready]);
+    if (ready && fontsReady) SplashScreen.hideAsync().catch(() => undefined);
+  }, [ready, fontsReady]);
 
   // Keep this phone's notification settings (language) up to date.
   useEffect(() => {
     if (ready && session && business) refreshPush(business.id, session.user.id, lang).catch(() => undefined);
   }, [ready, session, business, lang]);
 
-  // Tapping an alert notification opens that product (or the Alerts tab).
-  useEffect(() => {
-    const url = lastTap?.notification.request.content.data?.url;
-    if (!ready || !session || typeof url !== 'string') return;
-    if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
-    else if (url === '/alerts') router.push('/alerts');
-    Notifications.clearLastNotificationResponse();
-  }, [lastTap, ready, session]);
 
-  if (!ready) return <Loading />;
+  if (!ready || !fontsReady) return <Loading />;
 
   const base = dark ? DarkTheme : DefaultTheme;
   const theme = {
@@ -44,10 +45,12 @@ function Navigator() {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style={dark ? 'light' : 'dark'} />
+      {Platform.OS !== 'web' && session ? <NotificationTaps /> : null}
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: c.bg },
           headerTintColor: c.ink,
+          headerTitleStyle: lang === 'ar' ? undefined : { fontFamily: 'IBMPlexSans_600SemiBold' },
           headerShadowVisible: false,
           headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: c.bg },
@@ -69,6 +72,19 @@ function Navigator() {
       </Stack>
     </ThemeProvider>
   );
+}
+
+/** Tapping an alert notification opens that product (or the Alerts tab). Phones only. */
+function NotificationTaps() {
+  const lastTap = Notifications.useLastNotificationResponse();
+  useEffect(() => {
+    const url = lastTap?.notification.request.content.data?.url;
+    if (typeof url !== 'string') return;
+    if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
+    else if (url === '/alerts') router.push('/alerts');
+    Notifications.clearLastNotificationResponse();
+  }, [lastTap]);
+  return null;
 }
 
 export default function RootLayout() {

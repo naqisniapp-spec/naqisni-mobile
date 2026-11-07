@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
+import { Truck } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
 import { loadOrders, type Business } from '@/lib/data';
@@ -51,7 +52,7 @@ function Orders({ business }: { business: Business }) {
           keyExtractor={(o) => o.id}
           contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
-          ListEmptyComponent={<Empty text={t.noOrders} />}
+          ListEmptyComponent={<Empty text={t.noOrders} icon={<Truck size={40} color={c.slate} weight="duotone" />} />}
           renderItem={({ item: o }) => (
             <Card onPress={() => router.push({ pathname: '/order/[id]', params: { id: o.id } })} style={{ marginBottom: space.sm, gap: 4 }}>
               <Row style={{ justifyContent: 'space-between', gap: space.sm }}>

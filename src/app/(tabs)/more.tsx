@@ -2,15 +2,17 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
+import { Bell, CaretRight, ChatCircleDots, Globe, Moon, SignOut, Storefront } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
-import { Button, Card, Row, Segmented, Text } from '@/components/ui';
+import { Segmented, Text } from '@/components/ui';
 import { disablePush, enablePush, savedPushToken } from '@/lib/push';
 import { unreadCount } from '@/lib/support';
 import { useLoad } from '@/lib/use-load';
 import { supabase, WEB_URL } from '@/lib/supabase';
-import { space } from '@/lib/theme';
+import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
 export default function MoreScreen() {
@@ -45,114 +47,185 @@ export default function MoreScreen() {
     await supabase.auth.signOut();
   }
 
+  const initial = (business?.name ?? session?.user.email ?? '?').slice(0, 1).toUpperCase();
+
   return (
     <View style={{ flex: 1 }}>
       <ScreenHeader title={t.tabMore} />
-      <ScrollView contentContainerStyle={{ padding: space.lg, paddingTop: 0, gap: space.lg, paddingBottom: space.xxl * 2 }}>
-        <Card>
-          <Text size={18} weight="700">
-            {business?.name ?? '—'}
-          </Text>
-          <Text tone="slate">{session?.user.email}</Text>
-        </Card>
-
-        <Card onPress={() => router.push('/support')}>
-          <Row style={{ justifyContent: 'space-between', gap: space.md }}>
-            <Text weight="600">{t.support}</Text>
-            <Row style={{ gap: space.sm }}>
-              {unread ? (
-                <View style={[styles.badge, { backgroundColor: c.brandDeep }]}>
-                  <Text size={12} weight="700" style={{ color: c.card }}>
-                    {unread}
-                  </Text>
-                </View>
-              ) : null}
-              <Text tone="slate">›</Text>
-            </Row>
-          </Row>
-        </Card>
-
-        {stores.length > 0 && (
-          <Card onPress={stores.length > 1 ? () => router.push('/stores') : undefined}>
-            <Row style={{ justifyContent: 'space-between' }}>
-              <Text tone="slate">{t.store}</Text>
-              <Text weight="600">
-                {allStores ? t.allStores : (store?.name ?? '—')}
-                {stores.length > 1 ? '  ›' : ''}
-              </Text>
-            </Row>
-          </Card>
-        )}
-
-        <Card>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-            <View style={{ flex: 1 }}>
-              <Text weight="600">{t.notifications}</Text>
-              <Text tone="slate" size={13}>
-                {t.notificationsHint}
+      <ScrollView contentContainerStyle={{ padding: space.lg, paddingTop: 0, gap: space.xl, paddingBottom: space.xxl * 2 }}>
+        <View style={[styles.profile, { backgroundColor: c.card, borderColor: c.hairline }]}>
+          <View style={[styles.avatar, { backgroundColor: c.ink }]}>
+            <Text size={22} weight="700" style={{ color: c.brand }}>
+              {initial}
+            </Text>
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text size={18} weight="700" numberOfLines={1}>
+              {business?.name ?? '—'}
+            </Text>
+            <Text tone="slate" size={14} numberOfLines={1}>
+              {session?.user.email}
+            </Text>
+          </View>
+          {business?.plan ? (
+            <View style={[styles.plan, { backgroundColor: c.brandSoft }]}>
+              <Text size={12} weight="600" tone="brand" style={{ textTransform: 'capitalize' }}>
+                {business.plan}
               </Text>
             </View>
-            <Switch
-              value={pushOn}
-              disabled={pushBusy || !business}
-              onValueChange={togglePush}
-              trackColor={{ true: c.brand, false: c.hairline }}
-              thumbColor={c.card}
+          ) : null}
+        </View>
+
+        <Group>
+          <Item Icon={ChatCircleDots} label={t.support} onPress={() => router.push('/support')} badge={unread || undefined} />
+          {stores.length > 0 && (
+            <Item
+              Icon={Storefront}
+              label={t.store}
+              value={allStores ? t.allStores : (store?.name ?? '—')}
+              onPress={stores.length > 1 ? () => router.push('/stores') : undefined}
+            />
+          )}
+          <Item
+            Icon={Bell}
+            label={t.notifications}
+            hint={pushNote ?? t.notificationsHint}
+            hintTone={pushNote ? 'amber' : 'slate'}
+            right={
+              <Switch
+                value={pushOn}
+                disabled={pushBusy || !business}
+                onValueChange={togglePush}
+                trackColor={{ true: c.brand, false: c.hairline }}
+                thumbColor="#FFFFFF"
+              />
+            }
+          />
+        </Group>
+
+        <Group>
+          <View style={styles.setting}>
+            <Row Icon={Globe} label={t.language} />
+            <Segmented
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: 'en', label: 'English' },
+                { value: 'ar', label: 'العربية' },
+              ]}
             />
           </View>
-          {pushNote ? (
-            <Text tone="amber" size={13} style={{ marginTop: space.sm }}>
-              {pushNote}
-            </Text>
-          ) : null}
-        </Card>
+          <View style={[styles.setting, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.hairline }]}>
+            <Row Icon={Moon} label={t.theme} />
+            <Segmented
+              value={themePref}
+              onChange={setThemePref}
+              options={[
+                { value: 'system', label: t.system },
+                { value: 'light', label: t.light },
+                { value: 'dark', label: t.dark },
+              ]}
+            />
+          </View>
+        </Group>
 
-        <View style={{ gap: space.sm }}>
-          <Text tone="slate" size={13} weight="600">
-            {t.language}
-          </Text>
-          <Segmented
-            value={lang}
-            onChange={setLang}
-            options={[
-              { value: 'en', label: 'English' },
-              { value: 'ar', label: 'العربية' },
-            ]}
-          />
-        </View>
-
-        <View style={{ gap: space.sm }}>
-          <Text tone="slate" size={13} weight="600">
-            {t.theme}
-          </Text>
-          <Segmented
-            value={themePref}
-            onChange={setThemePref}
-            options={[
-              { value: 'system', label: t.system },
-              { value: 'light', label: t.light },
-              { value: 'dark', label: t.dark },
-            ]}
-          />
-        </View>
-
-        <Pressable onPress={() => WebBrowser.openBrowserAsync(`${WEB_URL}/dashboard`)} style={[styles.link, { borderColor: c.hairline }]}>
-          <Text tone="brand" weight="600">
-            {t.openWebsite}
-          </Text>
-        </Pressable>
-
-        <Button title={t.signOut} variant="danger" onPress={signOut} />
+        <Group>
+          <Item Icon={Globe} label={t.openWebsite} onPress={() => WebBrowser.openBrowserAsync(`${WEB_URL}/dashboard`)} />
+          <Item Icon={SignOut} label={t.signOut} onPress={signOut} danger />
+        </Group>
 
         <Text tone="slate" size={12} style={{ textAlign: 'center' }}>
-          Naqisni · {t.version} {Constants.expoConfig?.version ?? '1.0.0'}
+          Naqisni · {t.version} {Constants.expoConfig?.version ?? '2.0.0'}
         </Text>
       </ScrollView>
     </View>
   );
 }
 
+type IconType = ComponentType<{ size?: number; color?: string; weight?: 'regular' | 'bold' | 'fill' | 'duotone' }>;
+
+function Group({ children }: { children: ReactNode }) {
+  const { c } = useApp();
+  return <View style={[styles.group, { backgroundColor: c.card, borderColor: c.hairline }]}>{children}</View>;
+}
+
+function Row({ Icon, label, danger }: { Icon: IconType; label: string; danger?: boolean }) {
+  const { c } = useApp();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+      <View style={[styles.icon, { backgroundColor: danger ? c.alertSoft : c.brandSoft }]}>
+        <Icon size={18} color={danger ? c.alert : c.brandDeep} weight="bold" />
+      </View>
+      <Text weight="600" style={danger ? { color: c.alert } : undefined}>
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+/** One settings row. Rows after the first in a group get a divider. */
+function Item({
+  Icon,
+  label,
+  value,
+  hint,
+  hintTone = 'slate',
+  badge,
+  right,
+  onPress,
+  danger,
+}: {
+  Icon: IconType;
+  label: string;
+  value?: string;
+  hint?: string;
+  hintTone?: 'slate' | 'amber';
+  badge?: number;
+  right?: ReactNode;
+  onPress?: () => void;
+  danger?: boolean;
+}) {
+  const { c, rtl } = useApp();
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [styles.item, styles.divider, { borderTopColor: c.hairline }, pressed && { backgroundColor: c.hairline }]}
+      accessibilityRole={onPress ? 'button' : undefined}>
+      <View style={{ flex: 1, gap: 4 }}>
+        <Row Icon={Icon} label={label} danger={danger} />
+        {hint ? (
+          <Text tone={hintTone} size={13} style={{ marginStart: 44 }}>
+            {hint}
+          </Text>
+        ) : null}
+      </View>
+      {value ? (
+        <Text tone="slate" size={14} numberOfLines={1} style={{ maxWidth: 150 }}>
+          {value}
+        </Text>
+      ) : null}
+      {badge ? (
+        <View style={[styles.badge, { backgroundColor: c.brandDeep }]}>
+          <Text size={12} weight="700" style={{ color: c.card }}>
+            {badge}
+          </Text>
+        </View>
+      ) : null}
+      {right}
+      {onPress && !danger ? <CaretRight size={16} color={c.slate} style={rtl ? { transform: [{ scaleX: -1 }] } : undefined} /> : null}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  profile: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.lg, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth },
+  avatar: { width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  plan: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill },
+  group: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
+  item: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingVertical: 14 },
+  divider: { borderTopWidth: StyleSheet.hairlineWidth, marginTop: -StyleSheet.hairlineWidth },
+  setting: { padding: space.lg, gap: space.md },
+  icon: { width: 32, height: 32, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   badge: { minWidth: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 7 },
-  link: { paddingVertical: space.md, alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
 });
