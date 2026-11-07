@@ -13,7 +13,8 @@ and row-level security decides what each person sees, exactly like the website.
 | Record | Sale, restock, return or adjustment — same rules as the website's "Record a stock change" |
 | Alerts | Open and resolved low-stock alerts, mark as seen |
 | Orders | Auto-reorder drafts to approve (quantities can be changed) and orders on the way |
-| More | Store switcher, English / العربية (full right-to-left), light / dark, sign out |
+| More | Customer support, phone notifications on/off, store switcher (incl. **All stores**), English / العربية (full right-to-left), light / dark, sign out |
+| Support | Same tickets and General chat as naqisni.com's Customer support, live updates |
 
 Stock status uses a copy of the website's `riskLevel` (`src/lib/stock.ts`) so both always agree.
 
@@ -49,9 +50,27 @@ Most screens read and write Supabase directly. Actions that need the server (app
 the Claude-powered AI features later) call the website's API with the person's Supabase token:
 `Authorization: Bearer <access_token>` plus `x-naqisni-store`. See `webApi()` in `src/lib/supabase.ts`.
 
-**Needed on naqisni-web:** API routes currently read the session from browser cookies only.
-`createClient()` in `naqisni-web/src/lib/supabase/server.ts` must also accept a Bearer token for
-the app's "Approve and send" button to work.
+naqisni-web accepts these tokens in `createClient()` (`src/lib/supabase/server.ts`, branch
+`mobile-app-support`).
+
+## Phone notifications
+
+- The app saves the phone's Expo push token in `push_tokens` (naqisni-web migration 0064).
+- naqisni.com sends new stock alerts to those phones (`src/lib/predict/push.ts`), only for the
+  stores each person may use, in the phone's language. Tapping one opens the product.
+- They need a real build (not Expo Go on Android) and an EAS project id: run `npx eas-cli@latest init` once.
+- Android: add Firebase (FCM) credentials once with `npx eas-cli@latest credentials`.
+
+## Release (EAS)
+
+```bash
+npx eas-cli@latest login
+npx eas-cli@latest init                                   # once: links the Expo project
+npx eas-cli@latest build --profile preview --platform android    # installable APK to test
+npx eas-cli@latest build --profile production --platform android # Play Store (.aab)
+npx eas-cli@latest build --profile production --platform ios     # App Store (needs Apple Developer account)
+npx eas-cli@latest submit --platform android                      # upload to Play Console
+```
 
 ## Project layout
 

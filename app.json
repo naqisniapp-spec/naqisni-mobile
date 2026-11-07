@@ -8,7 +8,7 @@
     "scheme": "naqisni",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.naqisni.app",
       "supportsTablet": true,
       "infoPlist": {
@@ -36,7 +36,7 @@
         {
           "backgroundColor": "#10182B",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 120
         }
       ],
       "expo-secure-store",
@@ -52,11 +52,20 @@
           "cameraPermission": "Naqisni uses the camera to scan product barcodes.",
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#8CC63F",
+          "defaultChannel": "alerts",
+          "icon": "./assets/images/notification-icon.png"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "backgroundColor": "#10182B"
   }
 }

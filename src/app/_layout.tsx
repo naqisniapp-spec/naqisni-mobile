@@ -1,20 +1,37 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { Loading } from '@/components/ui';
+import { refreshPush } from '@/lib/push';
 import { AppProvider, useApp } from '@/providers/app-provider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 function Navigator() {
-  const { ready, session, c, dark, t } = useApp();
+  const { ready, session, business, lang, c, dark, t } = useApp();
+  const lastTap = Notifications.useLastNotificationResponse();
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => undefined);
   }, [ready]);
+
+  // Keep this phone's notification settings (language) up to date.
+  useEffect(() => {
+    if (ready && session && business) refreshPush(business.id, session.user.id, lang).catch(() => undefined);
+  }, [ready, session, business, lang]);
+
+  // Tapping an alert notification opens that product (or the Alerts tab).
+  useEffect(() => {
+    const url = lastTap?.notification.request.content.data?.url;
+    if (!ready || !session || typeof url !== 'string') return;
+    if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
+    else if (url === '/alerts') router.push('/alerts');
+    Notifications.clearLastNotificationResponse();
+  }, [lastTap, ready, session]);
 
   if (!ready) return <Loading />;
 
@@ -41,6 +58,9 @@ function Navigator() {
           <Stack.Screen name="order/[id]" options={{ title: '' }} />
           <Stack.Screen name="record" options={{ presentation: 'formSheet', title: t.recordChange, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />
           <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+          <Stack.Screen name="support/index" options={{ title: t.support }} />
+          <Stack.Screen name="support/[id]" options={{ title: '' }} />
+          <Stack.Screen name="support/new" options={{ presentation: 'formSheet', title: t.newTicket, sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true }} />
           <Stack.Screen name="stores" options={{ presentation: 'formSheet', title: t.chooseStore, sheetAllowedDetents: [0.5, 1], sheetGrabberVisible: true }} />
         </Stack.Protected>
         <Stack.Protected guard={!session}>
