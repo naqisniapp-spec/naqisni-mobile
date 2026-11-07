@@ -1,56 +1,69 @@
-# Welcome to your Expo app 👋
+# Naqisni mobile (version 2.0)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The Naqisni app for iPhone and Android, built with **React Native + Expo** (SDK 58, Expo Router, TypeScript).
+It uses the **same Supabase project as naqisni.com**, so every change shows up on the web and the phone at once,
+and row-level security decides what each person sees, exactly like the website.
 
-## Get started
+## What's in this first version
 
-1. Install dependencies
+| Tab | What it does |
+| --- | --- |
+| Overview | Reorder now / Running low / On order / Healthy counts, products needing attention, orders waiting for approval, latest alerts |
+| Products | Search (name, SKU, barcode), status filters, **barcode scanner**, product page with forecast, supplier and recent stock changes |
+| Record | Sale, restock, return or adjustment — same rules as the website's "Record a stock change" |
+| Alerts | Open and resolved low-stock alerts, mark as seen |
+| Orders | Auto-reorder drafts to approve (quantities can be changed) and orders on the way |
+| More | Store switcher, English / العربية (full right-to-left), light / dark, sign out |
 
-   ```bash
-   npm install
-   ```
+Stock status uses a copy of the website's `riskLevel` (`src/lib/stock.ts`) so both always agree.
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it on your computer (VS Code)
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code.
+The barcode scanner and secure sign-in storage need a **development build**, not Expo Go:
 
-### Other setup steps
+```bash
+npx expo run:android      # or: npx expo run:ios
+# or in the cloud:
+npx eas-cli@latest build --profile development --platform android
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Settings (`.env`)
 
-## Learn more
+```
+EXPO_PUBLIC_SUPABASE_URL=...      # naqisni Supabase project
+EXPO_PUBLIC_SUPABASE_KEY=...      # publishable key (safe in the app)
+EXPO_PUBLIC_WEB_URL=https://naqisni.com
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Never put the service-role key or the Claude API key in this app — those stay on the server.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Talking to naqisni.com
 
-## Join the community
+Most screens read and write Supabase directly. Actions that need the server (approving orders now,
+the Claude-powered AI features later) call the website's API with the person's Supabase token:
+`Authorization: Bearer <access_token>` plus `x-naqisni-store`. See `webApi()` in `src/lib/supabase.ts`.
 
-Join our community of developers creating universal apps.
+**Needed on naqisni-web:** API routes currently read the session from browser cookies only.
+`createClient()` in `naqisni-web/src/lib/supabase/server.ts` must also accept a Bearer token for
+the app's "Approve and send" button to work.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project layout
+
+```
+src/app/            screens (Expo Router)
+  (tabs)/           Overview, Products, Alerts, Orders, More
+  product/[id].tsx  product page
+  order/[id].tsx    order + approval
+  record.tsx        record a stock change (sheet)
+  scan.tsx          barcode scanner
+  stores.tsx        store picker (sheet)
+  sign-in.tsx
+src/lib/            supabase client, data loaders, stock status, i18n, theme
+src/providers/      session, business, store, language and theme
+```
