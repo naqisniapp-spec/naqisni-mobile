@@ -2,42 +2,46 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui';
+import { ALL_STORES } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
+/** Store picker. "All stores" shows every branch this person can use, together. */
 export default function StoresScreen() {
-  const { c, stores, store, setStore } = useApp();
+  const { c, t, stores, store, allStores, setStore } = useApp();
+  const options = [
+    ...(stores.length > 1 ? [{ id: ALL_STORES, name: t.allStores, sub: t.allStoresHint, on: allStores }] : []),
+    ...stores.map((s) => ({ id: s.id, name: s.name, sub: s.city, on: s.id === store?.id })),
+  ];
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.sm }}>
-      {stores.map((s) => {
-        const on = s.id === store?.id;
-        return (
-          <Pressable
-            key={s.id}
-            onPress={() => {
-              setStore(s.id);
-              router.back();
-            }}
-            style={({ pressed }) => [
-              styles.row,
-              { backgroundColor: on ? c.brandSoft : c.card, borderColor: on ? c.brand : c.hairline, opacity: pressed ? 0.75 : 1 },
-            ]}>
-            <View style={{ flex: 1 }}>
-              <Text weight="600">{s.name}</Text>
-              {s.city ? (
-                <Text tone="slate" size={13}>
-                  {s.city}
-                </Text>
-              ) : null}
-            </View>
-            {on && (
-              <Text tone="brand" weight="800">
-                ✓
+      {options.map((o) => (
+        <Pressable
+          key={o.id}
+          onPress={() => {
+            setStore(o.id);
+            router.back();
+          }}
+          style={({ pressed }) => [
+            styles.row,
+            { backgroundColor: o.on ? c.brandSoft : c.card, borderColor: o.on ? c.brand : c.hairline, opacity: pressed ? 0.75 : 1 },
+            o.id === ALL_STORES && { marginBottom: space.sm },
+          ]}>
+          <View style={{ flex: 1 }}>
+            <Text weight={o.id === ALL_STORES ? '700' : '600'}>{o.name}</Text>
+            {o.sub ? (
+              <Text tone="slate" size={13}>
+                {o.sub}
               </Text>
-            )}
-          </Pressable>
-        );
-      })}
+            ) : null}
+          </View>
+          {o.on && (
+            <Text tone="brand" weight="800">
+              ✓
+            </Text>
+          )}
+        </Pressable>
+      ))}
     </ScrollView>
   );
 }

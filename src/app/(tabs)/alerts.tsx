@@ -25,7 +25,7 @@ function when(iso: string, lang: string) {
 }
 
 function Alerts({ business }: { business: Business }) {
-  const { c, t, lang, scopeKey } = useApp();
+  const { c, t, lang, scopeKey, allStores, storeName } = useApp();
   const [tab, setTab] = useState<'open' | 'resolved'>('open');
   const { data, error, loading, refreshing, refresh, reload } = useLoad(() => loadAlerts(business.id, tab === 'open'), `${scopeKey}:${tab}`);
   const [seen, setSeen] = useState<Set<string>>(new Set());
@@ -76,6 +76,7 @@ function Alerts({ business }: { business: Business }) {
                     </Text>
                     <Text tone="slate" size={12}>
                       {when(a.created_at, lang)}
+                      {allStores && storeName(a.products?.store_id) ? `  ·  ${storeName(a.products?.store_id)}` : ''}
                     </Text>
                   </View>
                   {tab === 'open' &&

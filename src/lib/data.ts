@@ -36,6 +36,7 @@ export type Product = {
   currency: string | null;
   ext_on_order: number | null;
   ext_next_delivery: string | null;
+  store_id: string | null;
 };
 
 export type ProductRow = Product & {
@@ -54,7 +55,7 @@ export type Alert = {
   created_at: string;
   resolved_at: string | null;
   acknowledged: boolean | null;
-  products: { name: string } | null;
+  products: { name: string; store_id: string | null } | null;
 };
 
 export type Order = {
@@ -66,6 +67,7 @@ export type Order = {
   sent_at: string | null;
   created_at: string;
   supplier_response: string | null;
+  store_id: string | null;
   purchase_order_lines: { product_id: string; quantity: number; received_quantity: number | null; products: { name: string; unit: string | null } | null }[];
 };
 
@@ -113,7 +115,7 @@ export async function loadStores(): Promise<Store[]> {
 }
 
 const PRODUCT_COLUMNS =
-  'product_id, name, sku, barcode, unit, brand, category, location, image_url, supplier_name, supplier_phone, current_stock, reorder_point, lead_time_days, sell_price, cost_price, currency, ext_on_order, ext_next_delivery';
+  'product_id, name, sku, barcode, unit, brand, category, location, image_url, supplier_name, supplier_phone, current_stock, reorder_point, lead_time_days, sell_price, cost_price, currency, ext_on_order, ext_next_delivery, store_id';
 
 type Prediction = {
   product_id: string;
@@ -198,12 +200,12 @@ export async function loadAlerts(businessId: string, open: boolean): Promise<Ale
   if (error) throw new Error(error.message);
   const rows = data ?? [];
   const ids = [...new Set(rows.map((a) => a.product_id as string))];
-  const names = new Map<string, string>();
+  const names = new Map<string, { name: string; store_id: string | null }>();
   if (ids.length) {
-    const { data: products } = await supabase.from('products').select('product_id, name').in('product_id', ids);
-    for (const p of products ?? []) names.set(p.product_id, p.name);
+    const { data: products } = await supabase.from('products').select('product_id, name, store_id').in('product_id', ids);
+    for (const p of products ?? []) names.set(p.product_id, { name: p.name, store_id: p.store_id });
   }
-  return rows.map((a) => ({ ...a, products: names.has(a.product_id) ? { name: names.get(a.product_id)! } : null })) as Alert[];
+  return rows.map((a) => ({ ...a, products: names.get(a.product_id) ?? null })) as Alert[];
 }
 
 export async function acknowledgeAlert(id: string) {
@@ -215,7 +217,7 @@ export async function loadOrders(businessId: string): Promise<Order[]> {
   const { data, error } = await supabase
     .from('purchase_orders')
     .select(
-      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit))'
+      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit))'
     )
     .eq('business_id', businessId)
     .in('status', ['draft', 'open'])
@@ -229,7 +231,7 @@ export async function loadOrder(id: string): Promise<Order | null> {
   const { data, error } = await supabase
     .from('purchase_orders')
     .select(
-      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit))'
+      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit))'
     )
     .eq('id', id)
     .maybeSingle();

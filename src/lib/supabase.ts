@@ -58,9 +58,12 @@ class LargeSecureStore {
   }
 }
 
+/** Header value the database reads as "every store this person can use" (scope_store() returns null). */
+export const ALL_STORES = 'all';
+
 let storeScope: string | null = null;
 
-/** The store every query works in (null: the person's first store). */
+/** The store every query works in: a store id, ALL_STORES, or null (the person's first store). */
 export function setStoreScope(id: string | null) {
   storeScope = id;
 }

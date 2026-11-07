@@ -21,7 +21,7 @@ export default function OrdersScreen() {
 }
 
 function Orders({ business }: { business: Business }) {
-  const { c, t, lang, scopeKey } = useApp();
+  const { c, t, lang, scopeKey, allStores, storeName } = useApp();
   const [picked, setPicked] = useState<'draft' | 'open' | null>(null);
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadOrders(business.id), scopeKey);
   const drafts = (data ?? []).filter((o) => o.status === 'draft').length;
@@ -64,6 +64,11 @@ function Orders({ business }: { business: Business }) {
                   </Text>
                 )}
               </Row>
+              {allStores && storeName(o.store_id) ? (
+                <Text tone="slate" size={12} weight="600">
+                  {storeName(o.store_id)}
+                </Text>
+              ) : null}
               <Text tone="slate" size={14}>
                 {o.purchase_order_lines.length} {t.items}
                 {o.expected_at

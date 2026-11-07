@@ -16,7 +16,7 @@ export default function ProductScreen() {
 
 function Product({ business }: { business: Business }) {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { c, t, lang, scopeKey } = useApp();
+  const { c, t, lang, scopeKey, storeName } = useApp();
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadProduct(business.id, id), `${scopeKey}:${id}`);
 
   if (loading) return <Loading />;
@@ -30,6 +30,7 @@ function Product({ business }: { business: Business }) {
   const details: [string, string | null][] = [
     [t.brand, p.brand],
     [t.category, p.category],
+    [t.store, storeName(p.store_id)],
     [t.location, p.location],
     ['SKU', p.sku],
     ['Barcode', p.barcode],

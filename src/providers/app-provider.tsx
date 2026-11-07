@@ -11,7 +11,7 @@ import { Alert, I18nManager, useColorScheme } from 'react-native';
 
 import { loadBusiness, loadStores, type Business, type Store } from '@/lib/data';
 import { strings, type Lang, type Strings } from '@/lib/i18n';
-import { setStoreScope, supabase } from '@/lib/supabase';
+import { ALL_STORES, setStoreScope, supabase } from '@/lib/supabase';
 import { palette, type Colors } from '@/lib/theme';
 
 type ThemePref = 'system' | 'light' | 'dark';
@@ -22,8 +22,14 @@ type AppState = {
   business: Business | null;
   businessError: string | null;
   stores: Store[];
+  /** The store being worked in; null while "All stores" is picked. */
   store: Store | null;
+  /** True when "All stores" is picked: every branch this person can use, together. */
+  allStores: boolean;
+  /** A store id, or ALL_STORES. */
   setStore: (id: string) => void;
+  /** Store name by id, for labelling rows in the All stores view. */
+  storeName: (id: string | null | undefined) => string | null;
   /** Bumps whenever the store changes, so screens reload their data. */
   scopeKey: string;
   reloadBusiness: () => Promise<void>;
@@ -103,7 +109,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setStores(s);
       // A saved store this person can no longer use falls back to their first store.
       setStoreId((cur) => {
-        const next = s.find((x) => x.id === cur)?.id ?? s[0]?.id ?? null;
+        const keepAll = cur === ALL_STORES && s.length > 1;
+        const next = keepAll ? ALL_STORES : (s.find((x) => x.id === cur)?.id ?? s[0]?.id ?? null);
         setStoreScope(next);
         return next;
       });
@@ -150,7 +157,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const dark = themePref === 'dark' || (themePref === 'system' && scheme === 'dark');
-  const store = stores.find((s) => s.id === storeId) ?? null;
+  const allStores = storeId === ALL_STORES;
+  const store = allStores ? null : (stores.find((s) => s.id === storeId) ?? null);
+  const storeName = useCallback((id: string | null | undefined) => stores.find((s) => s.id === id)?.name ?? null, [stores]);
 
   const value = useMemo<AppState>(
     () => ({
@@ -161,7 +170,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       businessError,
       stores,
       store,
+      allStores,
       setStore,
+      storeName,
       scopeKey: `${business?.id ?? ''}:${storeId ?? ''}`,
       reloadBusiness,
       lang,
@@ -173,7 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dark,
       c: dark ? palette.dark : palette.light,
     }),
-    [prefsReady, authReady, loadedFor, userId, session, business, businessError, stores, store, setStore, storeId, reloadBusiness, lang, setLang, themePref, setThemePref, dark]
+    [prefsReady, authReady, loadedFor, userId, session, business, businessError, stores, store, allStores, setStore, storeName, storeId, reloadBusiness, lang, setLang, themePref, setThemePref, dark]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

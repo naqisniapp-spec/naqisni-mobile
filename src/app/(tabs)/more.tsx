@@ -10,7 +10,7 @@ import { space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
 export default function MoreScreen() {
-  const { c, t, session, business, store, stores, lang, setLang, themePref, setThemePref } = useApp();
+  const { c, t, session, business, store, stores, allStores, lang, setLang, themePref, setThemePref } = useApp();
 
   return (
     <View style={{ flex: 1 }}>
@@ -28,7 +28,7 @@ export default function MoreScreen() {
             <Row style={{ justifyContent: 'space-between' }}>
               <Text tone="slate">{t.store}</Text>
               <Text weight="600">
-                {store?.name ?? '—'}
+                {allStores ? t.allStores : (store?.name ?? '—')}
                 {stores.length > 1 ? '  ›' : ''}
               </Text>
             </Row>

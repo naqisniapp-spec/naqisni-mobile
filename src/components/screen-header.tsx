@@ -9,7 +9,7 @@ import { useApp } from '@/providers/app-provider';
 
 /** Large title for tab screens, with the store switcher when there is more than one store. */
 export function ScreenHeader({ title, right }: { title: string; right?: ReactNode }) {
-  const { c, store, stores } = useApp();
+  const { c, t, store, stores, allStores } = useApp();
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.wrap, { paddingTop: insets.top + space.md, backgroundColor: c.bg }]}>
@@ -19,14 +19,14 @@ export function ScreenHeader({ title, right }: { title: string; right?: ReactNod
         </Text>
         {right}
       </View>
-      {stores.length > 1 && store && (
+      {stores.length > 1 && (store || allStores) && (
         <Pressable
           onPress={() => router.push('/stores')}
           style={({ pressed }) => [styles.store, { backgroundColor: c.card, borderColor: c.hairline, opacity: pressed ? 0.7 : 1 }]}
           accessibilityRole="button">
-          <View style={[styles.dot, { backgroundColor: c.brand }]} />
+          <View style={[styles.dot, { backgroundColor: allStores ? c.amber : c.brand }]} />
           <Text size={13} weight="600" numberOfLines={1}>
-            {store.name}
+            {allStores ? t.allStores : store?.name}
           </Text>
           <Text size={11} tone="slate">
             ▾

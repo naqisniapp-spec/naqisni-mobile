@@ -10,7 +10,8 @@ import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
 export const ProductItem = memo(function ProductItem({ p }: { p: ProductRow }) {
-  const { c, t } = useApp();
+  const { c, t, allStores, storeName } = useApp();
+  const branch = allStores ? storeName(p.store_id) : null;
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/product/[id]', params: { id: p.product_id } })}
@@ -28,6 +29,11 @@ export const ProductItem = memo(function ProductItem({ p }: { p: ProductRow }) {
         <Text weight="600" numberOfLines={1}>
           {p.name}
         </Text>
+        {branch ? (
+          <Text tone="slate" size={12} weight="600" numberOfLines={1}>
+            {branch}
+          </Text>
+        ) : null}
         <Text tone="slate" size={13} numberOfLines={1}>
           {t.stock}: {qty(p.current_stock)}
           {p.unit ? ` ${p.unit}` : ''}

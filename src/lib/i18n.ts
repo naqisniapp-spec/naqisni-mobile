@@ -82,6 +82,8 @@ const en = {
   items: 'items',
 
   store: 'Store',
+  allStores: 'All stores',
+  allStoresHint: 'See every branch together',
   chooseStore: 'Choose a store',
   language: 'Language',
   theme: 'Appearance',
@@ -186,6 +188,8 @@ const ar: Strings = {
   items: 'أصناف',
 
   store: 'المتجر',
+  allStores: 'كل المتاجر',
+  allStoresHint: 'عرض كل الفروع معاً',
   chooseStore: 'اختر متجراً',
   language: 'اللغة',
   theme: 'المظهر',
