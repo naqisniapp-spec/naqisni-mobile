@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 /** Naqisni brand colours — the same values as naqisni-web src/app/globals.css. */
 export const palette = {
   light: {
@@ -37,4 +39,7 @@ export const palette = {
 export type Colors = typeof palette.light;
 
 export const radius = { sm: 6, md: 10, lg: 16, pill: 999 };
+/** On the web the tab bar floats at the top of the page; leave room under it. Phones: 0 (tab bar is at the bottom). */
+export const topBarSpace = Platform.OS === 'web' ? 76 : 0;
+
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };

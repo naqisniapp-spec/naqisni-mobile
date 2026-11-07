@@ -12,7 +12,7 @@ import { StorePill } from '@/components/screen-header';
 import { Card, ErrorState, Loading, riskColors, Row, Text } from '@/components/ui';
 import { loadAlerts, loadOrders, loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
-import { palette, radius, space } from '@/lib/theme';
+import { palette, radius, space, topBarSpace } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
 
@@ -63,7 +63,7 @@ function Overview({ business }: { business: Business }) {
   const warning = count('warning');
 
   const hero = (
-    <View style={[styles.hero, { paddingTop: insets.top + space.md }]}>
+    <View style={[styles.hero, { paddingTop: insets.top + topBarSpace + space.md }]}>
       <Row style={{ justifyContent: 'space-between', gap: space.md }}>
         <Logo width={104} />
         <StorePill onDark />
