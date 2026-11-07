@@ -23,7 +23,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.naqisni.app"
+      "package": "com.naqisni.app",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "single",

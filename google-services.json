@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153345761198",
+    "project_id": "naqisni",
+    "storage_bucket": "naqisni.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153345761198:android:c7618b49fc8ae45d90b23f",
+        "android_client_info": {
+          "package_name": "com.naqisni.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAf3dpI6NQKTpKGXKRsvqYSAIROzbMaQ7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
