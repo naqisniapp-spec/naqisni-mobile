@@ -5,7 +5,7 @@ import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-n
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BusinessGate } from '@/components/business-gate';
-import { ArrowsDownUp, Barcode, CaretRight, ChatCircleDots, CheckCircle, GearSix, Package, TrendDown, Truck, Warning } from '@/components/icons';
+import { ArrowsDownUp, Barcode, CaretRight, ChatCircleDots, CheckCircle, Package, TrendDown, Truck, Warning } from '@/components/icons';
 import { Logo } from '@/components/logo';
 import { ProductItem } from '@/components/product-item';
 import { StorePill } from '@/components/screen-header';
@@ -66,17 +66,7 @@ function Overview({ business }: { business: Business }) {
     <View style={[styles.hero, { paddingTop: insets.top + topBarSpace + space.md }]}>
       <Row style={{ justifyContent: 'space-between', gap: space.md }}>
         <Logo width={104} />
-        <Row style={{ gap: space.sm }}>
-          <StorePill onDark />
-          <Pressable
-            onPress={() => router.push('/more')}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t.tabMore}
-            style={({ pressed }) => [styles.gear, pressed && { opacity: 0.7 }]}>
-            <GearSix size={22} color="#FFFFFF" />
-          </Pressable>
-        </Row>
+        <StorePill onDark />
       </Row>
       <Text size={15} style={{ color: 'rgba(255,255,255,0.65)', marginTop: space.xl }}>
         {greeting(t)}
@@ -264,7 +254,6 @@ function SectionTitle({ title, onSeeAll }: { title: string; onSeeAll?: () => voi
 }
 
 const styles = StyleSheet.create({
-  gear: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.10)' },
   hero: {
     backgroundColor: INK,
     paddingHorizontal: space.lg,
