@@ -21,7 +21,7 @@ if (!url || !key) {
 }
 
 /** The website (Next.js) — server actions such as approving orders go through its API. */
-export const WEB_URL = (process.env.EXPO_PUBLIC_WEB_URL ?? 'https://naqisni.com').replace(/\/$/, '');
+export const WEB_URL = (process.env.EXPO_PUBLIC_WEB_URL ?? 'https://www.naqisni.com').replace(/\/$/, '');
 
 /**
  * The session is larger than the 2 KB SecureStore limit, so it is AES-encrypted
