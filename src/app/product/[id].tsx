@@ -1,8 +1,9 @@
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Linking, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
+import { PencilSimple } from '@/components/icons';
 import { Button, Card, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
 import { loadProduct, type Business } from '@/lib/data';
 import { qty } from '@/lib/stock';
@@ -39,7 +40,24 @@ function Product({ business }: { business: Business }) {
 
   return (
     <>
-      <Stack.Screen options={{ title: p.name }} />
+      <Stack.Screen
+        options={{
+          title: p.name,
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push({ pathname: '/product-form', params: { id: p.product_id } })}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={t.editProduct}
+              style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.6 : 1 })}>
+              <PencilSimple size={18} color={c.brandDeep} weight="bold" />
+              <Text tone="brand" weight="600">
+                {t.edit}
+              </Text>
+            </Pressable>
+          ),
+        }}
+      />
       <ScrollView
         contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: 120 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
@@ -90,6 +108,15 @@ function Product({ business }: { business: Business }) {
             )}
           </Card>
         )}
+
+        {p.description ? (
+          <Card style={{ gap: 4 }}>
+            <Text tone="slate" size={13}>
+              {t.description}
+            </Text>
+            <Text>{p.description}</Text>
+          </Card>
+        ) : null}
 
         {details.some(([, v]) => v) && (
           <Card style={{ paddingVertical: space.sm }}>

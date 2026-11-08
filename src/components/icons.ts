@@ -5,6 +5,7 @@
 export { ArrowsDownUpIcon as ArrowsDownUp } from 'phosphor-react-native/src/icons/ArrowsDownUp';
 export { BarcodeIcon as Barcode } from 'phosphor-react-native/src/icons/Barcode';
 export { BellIcon as Bell } from 'phosphor-react-native/src/icons/Bell';
+export { CameraIcon as Camera } from 'phosphor-react-native/src/icons/Camera';
 export { CaretDownIcon as CaretDown } from 'phosphor-react-native/src/icons/CaretDown';
 export { CaretRightIcon as CaretRight } from 'phosphor-react-native/src/icons/CaretRight';
 export { ChatCircleDotsIcon as ChatCircleDots } from 'phosphor-react-native/src/icons/ChatCircleDots';
@@ -15,7 +16,9 @@ export { GlobeIcon as Globe } from 'phosphor-react-native/src/icons/Globe';
 export { MagnifyingGlassIcon as MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 export { MoonIcon as Moon } from 'phosphor-react-native/src/icons/Moon';
 export { PackageIcon as Package } from 'phosphor-react-native/src/icons/Package';
+export { PencilSimpleIcon as PencilSimple } from 'phosphor-react-native/src/icons/PencilSimple';
 export { PhoneIcon as Phone } from 'phosphor-react-native/src/icons/Phone';
+export { PlusIcon as Plus } from 'phosphor-react-native/src/icons/Plus';
 export { SignOutIcon as SignOut } from 'phosphor-react-native/src/icons/SignOut';
 export { StorefrontIcon as Storefront } from 'phosphor-react-native/src/icons/Storefront';
 export { TrashIcon as Trash } from 'phosphor-react-native/src/icons/Trash';

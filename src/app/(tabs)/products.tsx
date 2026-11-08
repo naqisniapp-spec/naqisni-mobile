@@ -3,10 +3,10 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
-import { Barcode, MagnifyingGlass } from '@/components/icons';
+import { Barcode, MagnifyingGlass, Plus } from '@/components/icons';
 import { ProductItem } from '@/components/product-item';
 import { ScreenHeader } from '@/components/screen-header';
-import { Empty, ErrorState, Loading, Text } from '@/components/ui';
+import { Button, Empty, ErrorState, Loading, Text } from '@/components/ui';
 import { loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
 import { palette, radius, space } from '@/lib/theme';
@@ -22,6 +22,14 @@ export default function ProductsScreen() {
       <ScreenHeader
         title={t.tabProducts}
         right={
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+          <Pressable
+            onPress={() => router.push('/product-form')}
+            style={({ pressed }) => [styles.addBtn, { backgroundColor: c.brand, opacity: pressed ? 0.8 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={t.addProduct}>
+            <Plus size={20} color={c.onBrand} weight="bold" />
+          </Pressable>
           <Pressable
             onPress={() => router.push('/scan')}
             style={({ pressed }) => [styles.scanBtn, { backgroundColor: palette.light.ink, opacity: pressed ? 0.8 : 1 }]}
@@ -32,6 +40,7 @@ export default function ProductsScreen() {
               {t.scan}
             </Text>
           </Pressable>
+          </View>
         }
       />
       <BusinessGate>{(b) => <Products business={b} />}</BusinessGate>
@@ -114,7 +123,12 @@ function Products({ business }: { business: Business }) {
           </ScrollView>
         </View>
       }
-      ListEmptyComponent={<Empty text={t.noProducts} icon={<MagnifyingGlass size={40} color={c.slate} weight="duotone" />} />}
+      ListEmptyComponent={
+        <View>
+          <Empty text={t.noProducts} icon={<MagnifyingGlass size={40} color={c.slate} weight="duotone" />} />
+          {!query && filter === 'all' ? <Button title={t.addProduct} onPress={() => router.push('/product-form')} /> : null}
+        </View>
+      }
     />
   );
 }
@@ -123,5 +137,6 @@ const styles = StyleSheet.create({
   searchWrap: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 48, borderWidth: StyleSheet.hairlineWidth, borderRadius: radius.md, paddingHorizontal: space.md },
   search: { flex: 1, minHeight: 46, fontSize: 16 },
   pill: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth },
+  addBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   scanBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: radius.pill },
 });

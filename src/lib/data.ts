@@ -37,6 +37,11 @@ export type Product = {
   ext_on_order: number | null;
   ext_next_delivery: string | null;
   store_id: string | null;
+  description: string | null;
+  /** manual, or the connected system the product is copied from (maximo, quickbooks, odoo, api). */
+  source: string | null;
+  /** The product's rows in the other stores share this. */
+  group_id: string | null;
 };
 
 export type ProductRow = Product & {
@@ -115,7 +120,7 @@ export async function loadStores(): Promise<Store[]> {
 }
 
 const PRODUCT_COLUMNS =
-  'product_id, name, sku, barcode, unit, brand, category, location, image_url, supplier_name, supplier_phone, current_stock, reorder_point, lead_time_days, sell_price, cost_price, currency, ext_on_order, ext_next_delivery, store_id';
+  'product_id, name, sku, barcode, unit, brand, category, location, image_url, supplier_name, supplier_phone, current_stock, reorder_point, lead_time_days, sell_price, cost_price, currency, ext_on_order, ext_next_delivery, store_id, description, source, group_id';
 
 type Prediction = {
   product_id: string;

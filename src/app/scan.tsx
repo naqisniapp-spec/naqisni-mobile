@@ -1,18 +1,23 @@
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Centered, Text } from '@/components/ui';
 import { findByBarcode } from '@/lib/data';
+import { deliver, stopWaiting } from '@/lib/picker';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
-/** Scan a barcode (or SKU QR) and open that product. */
+/**
+ * Scan a barcode (or SKU QR) and open that product. With `pick=1` (from the
+ * product form) the code is handed back to the form instead.
+ */
 export default function ScanScreen() {
   const { t, business } = useApp();
+  const { pick } = useLocalSearchParams<{ pick?: string }>();
   const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
   const [notice, setNotice] = useState<string | null>(null);
@@ -24,6 +29,11 @@ export default function ScanScreen() {
     busy.current = true;
     last.current = data;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
+    if (pick) {
+      deliver('barcode', data.trim());
+      router.back();
+      return;
+    }
     const id = await findByBarcode(business.id, data.trim());
     if (id) {
       router.replace({ pathname: '/product/[id]', params: { id } });
@@ -35,13 +45,18 @@ export default function ScanScreen() {
     setTimeout(() => (last.current = null), 2500);
   }
 
+  function close() {
+    if (pick) stopWaiting('barcode');
+    router.back();
+  }
+
   if (!permission) return <Centered>{null}</Centered>;
   if (!permission.granted)
     return (
       <Centered>
         <Text style={{ textAlign: 'center', marginBottom: space.lg }}>{t.cameraPermission}</Text>
         <Button title={t.allowCamera} onPress={requestPermission} />
-        <Button title={t.close} variant="secondary" onPress={() => router.back()} style={{ marginTop: space.md }} />
+        <Button title={t.close} variant="secondary" onPress={close} style={{ marginTop: space.md }} />
       </Centered>
     );
 
@@ -56,7 +71,7 @@ export default function ScanScreen() {
       <View style={styles.frameWrap} pointerEvents="none">
         <View style={styles.frame} />
       </View>
-      <Pressable onPress={() => router.back()} style={[styles.close, { top: insets.top + space.md }]} hitSlop={12}>
+      <Pressable onPress={close} style={[styles.close, { top: insets.top + space.md }]} hitSlop={12}>
         <Text weight="700" style={{ color: '#fff' }}>
           {t.close}
         </Text>
