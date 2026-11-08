@@ -5,7 +5,9 @@ import { Linking, Pressable, RefreshControl, ScrollView, StyleSheet, View } from
 import { BusinessGate } from '@/components/business-gate';
 import { PencilSimple } from '@/components/icons';
 import { Button, Card, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
+import { daysToExpiry, loadProductBatches } from '@/lib/batches';
 import { loadProduct, type Business } from '@/lib/data';
+import { supplierKey } from '@/lib/suppliers';
 import { qty } from '@/lib/stock';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
@@ -19,6 +21,7 @@ function Product({ business }: { business: Business }) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { c, t, lang, scopeKey, storeName } = useApp();
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadProduct(business.id, id), `${scopeKey}:${id}`);
+  const batches = useLoad(() => loadProductBatches(id), `${scopeKey}:${id}:batches`);
 
   if (loading) return <Loading />;
   if (error || !data) return <ErrorState message={error ?? t.noProducts} onRetry={refresh} />;
@@ -96,7 +99,7 @@ function Product({ business }: { business: Business }) {
         )}
 
         {p.supplier_name && (
-          <Card style={{ gap: 4 }}>
+          <Card style={{ gap: 4 }} onPress={() => router.push({ pathname: '/supplier/[key]', params: { key: supplierKey(p.supplier_name!) } })}>
             <Text tone="slate" size={13}>
               {t.supplier}
             </Text>
@@ -132,6 +135,41 @@ function Product({ business }: { business: Business }) {
               ))}
           </Card>
         )}
+
+        <Card style={{ gap: space.sm }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Text tone="slate" size={13} weight="600">
+              {t.batchesTitle}
+            </Text>
+            <Text
+              tone="brand"
+              weight="600"
+              onPress={() => router.push({ pathname: '/batch', params: { productId: p.product_id, name: p.name, unit: p.unit ?? '', source: p.source ?? 'manual' } })}>
+              + {t.addBatch}
+            </Text>
+          </Row>
+          {(batches.data ?? []).length === 0 ? (
+            <Text tone="slate" size={13}>
+              {t.noBatchesProduct}
+            </Text>
+          ) : (
+            (batches.data ?? []).map((b) => {
+              const d = daysToExpiry(b.expiry_date);
+              return (
+                <Row key={b.id} style={{ justifyContent: 'space-between', gap: space.md }}>
+                  <Text size={14} style={{ flex: 1 }}>
+                    {qty(b.quantity)}
+                    {unit}
+                    {b.batch_code ? ` · ${b.batch_code}` : ''}
+                  </Text>
+                  <Text size={13} weight="600" tone={d === null ? 'slate' : d <= 7 ? 'alert' : d <= 30 ? 'amber' : 'slate'}>
+                    {t.expiryLabel(d)}
+                  </Text>
+                </Row>
+              );
+            })
+          )}
+        </Card>
 
         {data.movements.length > 0 && (
           <Card style={{ paddingVertical: space.sm }}>

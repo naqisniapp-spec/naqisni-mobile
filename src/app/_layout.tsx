@@ -62,6 +62,12 @@ function Navigator() {
           <Stack.Screen name="product-form" options={{ title: '' }} />
           <Stack.Screen name="count" options={{ title: '' }} />
           <Stack.Screen name="new-order" options={{ title: '' }} />
+          <Stack.Screen name="suppliers" options={{ title: '' }} />
+          <Stack.Screen name="supplier/[key]" options={{ title: '' }} />
+          <Stack.Screen name="expiry" options={{ title: '' }} />
+          <Stack.Screen name="reports" options={{ title: '' }} />
+          <Stack.Screen name="alert-settings" options={{ title: '' }} />
+          <Stack.Screen name="batch" options={{ presentation: 'formSheet', title: t.addBatch, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />
           <Stack.Screen name="history" options={{ title: '' }} />
           <Stack.Screen name="photo" options={{ presentation: 'fullScreenModal', headerShown: false }} />
           <Stack.Screen name="record" options={{ presentation: 'formSheet', title: t.recordChange, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />

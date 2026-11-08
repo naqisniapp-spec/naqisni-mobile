@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
-import { Bell, CaretRight, ChatCircleDots, ClipboardText, ClockCounterClockwise, FileText, Globe, Moon, SignOut, Storefront, Trash } from '@/components/icons';
+import { Bell, CaretRight, ChartBar, ChatCircleDots, ClipboardText, Clock, ClockCounterClockwise, FileText, GearSix, Globe, Moon, SignOut, Storefront, Trash, Truck } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Segmented, Text } from '@/components/ui';
 import { disablePush, enablePush, savedPushToken } from '@/lib/push';
@@ -82,6 +82,13 @@ export default function MoreScreen() {
         <Group>
           <Item Icon={ClipboardText} label={t.countStock} hint={t.countStockHint} onPress={() => router.push('/count')} />
           <Item Icon={ClockCounterClockwise} label={t.stockHistory} onPress={() => router.push('/history')} />
+          <Item Icon={Clock} label={t.expiryDates} onPress={() => router.push('/expiry')} />
+        </Group>
+
+        <Group>
+          <Item Icon={Truck} label={t.suppliers} onPress={() => router.push('/suppliers')} />
+          <Item Icon={ChartBar} label={t.reports} onPress={() => router.push('/reports')} />
+          <Item Icon={GearSix} label={t.alertSettings} onPress={() => router.push('/alert-settings')} />
         </Group>
 
         <Group>

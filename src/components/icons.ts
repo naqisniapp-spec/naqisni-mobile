@@ -7,6 +7,7 @@ export { BarcodeIcon as Barcode } from 'phosphor-react-native/src/icons/Barcode'
 export { BellIcon as Bell } from 'phosphor-react-native/src/icons/Bell';
 export { CameraIcon as Camera } from 'phosphor-react-native/src/icons/Camera';
 export { CheckIcon as Check } from 'phosphor-react-native/src/icons/Check';
+export { ChartBarIcon as ChartBar } from 'phosphor-react-native/src/icons/ChartBar';
 export { CaretDownIcon as CaretDown } from 'phosphor-react-native/src/icons/CaretDown';
 export { CaretRightIcon as CaretRight } from 'phosphor-react-native/src/icons/CaretRight';
 export { ChatCircleDotsIcon as ChatCircleDots } from 'phosphor-react-native/src/icons/ChatCircleDots';
@@ -15,6 +16,7 @@ export { CheckCircleIcon as CheckCircle } from 'phosphor-react-native/src/icons/
 export { ClockIcon as Clock } from 'phosphor-react-native/src/icons/Clock';
 export { ClockCounterClockwiseIcon as ClockCounterClockwise } from 'phosphor-react-native/src/icons/ClockCounterClockwise';
 export { FileTextIcon as FileText } from 'phosphor-react-native/src/icons/FileText';
+export { GearSixIcon as GearSix } from 'phosphor-react-native/src/icons/GearSix';
 export { GlobeIcon as Globe } from 'phosphor-react-native/src/icons/Globe';
 export { MagnifyingGlassIcon as MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 export { MoonIcon as Moon } from 'phosphor-react-native/src/icons/Moon';
