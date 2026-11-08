@@ -73,7 +73,12 @@ export type Order = {
   created_at: string;
   supplier_response: string | null;
   store_id: string | null;
-  purchase_order_lines: { product_id: string; quantity: number; received_quantity: number | null; products: { name: string; unit: string | null } | null }[];
+  purchase_order_lines: {
+    product_id: string;
+    quantity: number;
+    received_quantity: number | null;
+    products: { name: string; unit: string | null; source?: string | null } | null;
+  }[];
 };
 
 type Page<T> = (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>;
@@ -236,7 +241,7 @@ export async function loadOrder(id: string): Promise<Order | null> {
   const { data, error } = await supabase
     .from('purchase_orders')
     .select(
-      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit))'
+      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit, source))'
     )
     .eq('id', id)
     .maybeSingle();
@@ -348,4 +353,46 @@ export async function loadProduct(businessId: string, productId: string) {
     }),
   };
   return { product: row, movements: (moves ?? []) as Movement[] };
+}
+
+/**
+ * Records a delivery: one "restock" per product, the same way the website's
+ * Update stock page does when you press Receive on an order. The database then
+ * ticks the quantities off the open orders and marks an order received once
+ * everything has arrived (movements_receive_orders).
+ */
+export async function receiveDelivery(businessId: string, lines: { product_id: string; quantity: number }[], note?: string) {
+  const items = lines.filter((l) => l.quantity > 0);
+  if (!items.length) throw new Error('nothing');
+  const ids = items.map((l) => l.product_id);
+  const { data: latest, error: readError } = await supabase
+    .from('products')
+    .select('product_id, current_stock')
+    .eq('business_id', businessId)
+    .in('product_id', ids);
+  if (readError || !latest) throw new Error(readError?.message ?? 'Could not read the current stock.');
+  const stockNow = new Map(latest.map((p) => [p.product_id as string, Number(p.current_stock ?? 0)]));
+
+  const { error: insertError } = await supabase.from('inventory_movements').insert(
+    items.map((l) => ({
+      business_id: businessId,
+      product_id: l.product_id,
+      type: 'restock',
+      quantity: l.quantity,
+      source: 'manual',
+      note: note || null,
+    }))
+  );
+  if (insertError) throw new Error(insertError.message);
+
+  const failed: string[] = [];
+  for (const l of items) {
+    const { error } = await supabase
+      .from('products')
+      .update({ current_stock: (stockNow.get(l.product_id) ?? 0) + l.quantity })
+      .eq('product_id', l.product_id)
+      .eq('business_id', businessId);
+    if (error) failed.push(l.product_id);
+  }
+  return { saved: items.length, failed };
 }

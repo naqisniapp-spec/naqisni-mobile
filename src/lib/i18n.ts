@@ -244,6 +244,19 @@ const en = {
   lastDays: (d: number) => `Last ${d} days`,
   historyAllStores: 'Showing every store. Pick one store at the top to see only its changes.',
   noHistory: 'No stock changes for this search.',
+  // Deliveries
+  recordDelivery: 'Record delivery',
+  saveDelivery: 'Save delivery',
+  deliveryHint: "Filled in with what is still to come. Change any quantity that didn't arrive in full, then save. The order is ticked off automatically.",
+  arrived: 'Arrived',
+  arrivedOf: (got: string, of: string) => `${got} of ${of} arrived`,
+  allArrived: 'All arrived',
+  nothingArrived: 'Enter what arrived for at least one product.',
+  deliverySaved: (n: number) => `Delivery saved: ${n} product${n === 1 ? '' : 's'} added to the stock.`,
+  deliveryPartlySaved: (n: number) =>
+    `The delivery was recorded, but the stock could not be updated for ${n} product${n === 1 ? '' : 's'}. Correct them on the product page; do not enter them again.`,
+  receiveInSystem: 'Record this one in your connected system.',
+  orderReceived: 'Received',
 };
 
 export type Strings = typeof en;
@@ -491,6 +504,18 @@ const ar: Strings = {
   lastDays: (d: number) => `آخر ${d} يوماً`,
   historyAllStores: 'يُعرض كل الفروع. اختر فرعاً واحداً في الأعلى لرؤية تغييراته فقط.',
   noHistory: 'لا توجد تغييرات في المخزون لهذا البحث.',
+  // التوصيلات
+  recordDelivery: 'تسجيل الاستلام',
+  saveDelivery: 'حفظ الاستلام',
+  deliveryHint: 'تمت تعبئة الكميات المتبقية من الطلب. غيّر أي كمية لم تصل كاملة ثم احفظ. يُحدَّث الطلب تلقائياً.',
+  arrived: 'وصل',
+  arrivedOf: (got: string, of: string) => `وصل ${got} من ${of}`,
+  allArrived: 'وصل بالكامل',
+  nothingArrived: 'أدخل ما وصل لمنتج واحد على الأقل.',
+  deliverySaved: (n: number) => `تم حفظ الاستلام: أُضيف ${n} منتج إلى المخزون.`,
+  deliveryPartlySaved: (n: number) => `تم تسجيل الاستلام، لكن تعذّر تحديث مخزون ${n} منتج. صحّحه من صفحة المنتج ولا تُدخله مرة أخرى.`,
+  receiveInSystem: 'سجّل هذا المنتج في نظامك المتصل.',
+  orderReceived: 'تم الاستلام',
 };
 
 export const strings: Record<Lang, Strings> = { en, ar };
