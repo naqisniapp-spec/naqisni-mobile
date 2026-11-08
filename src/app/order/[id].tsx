@@ -1,9 +1,11 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { Button, Card, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { WhatsappLogo } from '@/components/icons';
 import { loadOrder, receiveDelivery } from '@/lib/data';
+import { callingCode, loadOrderBusiness, markSent, orderMessage, whatsappLink, whatsappNumber } from '@/lib/orders';
 import { qty } from '@/lib/stock';
 import { webApi } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
@@ -41,6 +43,27 @@ export default function OrderScreen() {
   function startReceiving() {
     setMessage(null);
     setReceiving(Object.fromEntries(receivable.map((l) => [l.product_id, qty(left(l))])));
+  }
+
+  // Orders made by hand are sent by the owner on WhatsApp (auto-reorder orders go out on approval).
+  const canSend = isOpen && !order.auto && !order.sent_at && Boolean(order.supplier_phone);
+
+  async function sendWhatsApp() {
+    if (!business || !order) return;
+    setMessage(null);
+    const info = await loadOrderBusiness(business.id);
+    const number = whatsappNumber(order.supplier_phone, callingCode(info));
+    if (!number.digits) return setMessage({ tone: 'alert', text: number.needsCode ? t.phoneNeedsCode : t.phoneNotValid });
+    const text = orderMessage({
+      businessName: info?.name ?? business.name,
+      supplierName: order.supplier_name,
+      lines: order.purchase_order_lines.map((l) => ({ name: l.products?.name ?? '', quantity: Number(l.quantity), unit: l.products?.unit ?? null })),
+      expected: order.expected_at,
+      note: order.note ?? null,
+    });
+    await Linking.openURL(whatsappLink(number.digits, text));
+    await markSent(order.id);
+    reload();
   }
 
   async function saveDelivery() {
@@ -96,6 +119,7 @@ export default function OrderScreen() {
           <Text tone="slate">
             {isDraft ? t.drafts : isOpen ? t.open : order.status === 'received' ? t.orderReceived : order.status}
             {order.auto ? ` · ${t.autoOrder}` : ''}
+            {isOpen && !order.auto ? ` · ${order.sent_at ? t.sent : t.notSentYet}` : ''}
             {order.expected_at
               ? ` · ${t.expected} ${new Date(order.expected_at + 'T00:00:00Z').toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}`
               : ''}
@@ -171,7 +195,17 @@ export default function OrderScreen() {
               <Button title={busy ? t.saving : t.saveDelivery} onPress={saveDelivery} loading={busy} style={{ flex: 2 }} />
             </Row>
           ) : (
-            <Button title={t.recordDelivery} onPress={startReceiving} />
+            <View style={{ gap: space.sm }}>
+              {canSend ? (
+                <Pressable onPress={sendWhatsApp} accessibilityRole="button" style={({ pressed }) => [styles.wa, pressed && { opacity: 0.85 }]}>
+                  <WhatsappLogo size={20} color="#FFFFFF" weight="fill" />
+                  <Text weight="700" style={{ color: '#FFFFFF' }}>
+                    {t.sendOnWhatsApp}
+                  </Text>
+                </Pressable>
+              ) : null}
+              <Button title={t.recordDelivery} onPress={startReceiving} variant={canSend ? 'secondary' : 'primary'} />
+            </View>
           )}
         </View>
       )}
@@ -182,6 +216,7 @@ export default function OrderScreen() {
 const styles = StyleSheet.create({
   line: { paddingVertical: space.md, gap: space.sm },
   qty: { width: 76, minHeight: 40, borderWidth: 1, borderRadius: radius.sm, textAlign: 'center', fontSize: 16, fontWeight: '600' },
+  wa: { minHeight: 50, borderRadius: radius.md, backgroundColor: '#1FA855', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
   hint: { padding: space.md, borderRadius: radius.md },
   footer: { position: 'absolute', left: 0, right: 0, bottom: 0, padding: space.lg, paddingBottom: space.xxl, borderTopWidth: StyleSheet.hairlineWidth },
 });

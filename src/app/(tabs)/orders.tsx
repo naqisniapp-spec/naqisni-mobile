@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
-import { Truck } from '@/components/icons';
+import { Plus, Truck } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
 import { loadOrders, type Business } from '@/lib/data';
@@ -12,10 +12,33 @@ import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
 
 export default function OrdersScreen() {
-  const { t } = useApp();
+  const { c, t } = useApp();
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader title={t.tabOrders} />
+      <ScreenHeader
+        title={t.tabOrders}
+        right={
+          <Pressable
+            onPress={() => router.push('/new-order')}
+            accessibilityRole="button"
+            accessibilityLabel={t.newOrder}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              paddingHorizontal: 14,
+              paddingVertical: 9,
+              borderRadius: 999,
+              backgroundColor: c.brand,
+              opacity: pressed ? 0.8 : 1,
+            })}>
+            <Plus size={16} color={c.onBrand} weight="bold" />
+            <Text size={14} weight="600" style={{ color: c.onBrand }}>
+              {t.newOrder}
+            </Text>
+          </Pressable>
+        }
+      />
       <BusinessGate>{(b) => <Orders business={b} />}</BusinessGate>
     </View>
   );
@@ -65,6 +88,11 @@ function Orders({ business }: { business: Business }) {
                   </Text>
                 )}
               </Row>
+              {o.status === 'open' && !o.sent_at && !o.auto ? (
+                <Text tone="amber" size={12} weight="600">
+                  {t.notSentYet}
+                </Text>
+              ) : null}
               {allStores && storeName(o.store_id) ? (
                 <Text tone="slate" size={12} weight="600">
                   {storeName(o.store_id)}

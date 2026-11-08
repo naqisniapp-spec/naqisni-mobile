@@ -61,6 +61,7 @@ function Navigator() {
           <Stack.Screen name="order/[id]" options={{ title: '' }} />
           <Stack.Screen name="product-form" options={{ title: '' }} />
           <Stack.Screen name="count" options={{ title: '' }} />
+          <Stack.Screen name="new-order" options={{ title: '' }} />
           <Stack.Screen name="history" options={{ title: '' }} />
           <Stack.Screen name="photo" options={{ presentation: 'fullScreenModal', headerShown: false }} />
           <Stack.Screen name="record" options={{ presentation: 'formSheet', title: t.recordChange, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />

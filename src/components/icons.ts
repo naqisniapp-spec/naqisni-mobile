@@ -6,6 +6,7 @@ export { ArrowsDownUpIcon as ArrowsDownUp } from 'phosphor-react-native/src/icon
 export { BarcodeIcon as Barcode } from 'phosphor-react-native/src/icons/Barcode';
 export { BellIcon as Bell } from 'phosphor-react-native/src/icons/Bell';
 export { CameraIcon as Camera } from 'phosphor-react-native/src/icons/Camera';
+export { CheckIcon as Check } from 'phosphor-react-native/src/icons/Check';
 export { CaretDownIcon as CaretDown } from 'phosphor-react-native/src/icons/CaretDown';
 export { CaretRightIcon as CaretRight } from 'phosphor-react-native/src/icons/CaretRight';
 export { ChatCircleDotsIcon as ChatCircleDots } from 'phosphor-react-native/src/icons/ChatCircleDots';
@@ -27,4 +28,5 @@ export { TrashIcon as Trash } from 'phosphor-react-native/src/icons/Trash';
 export { TrendDownIcon as TrendDown } from 'phosphor-react-native/src/icons/TrendDown';
 export { TruckIcon as Truck } from 'phosphor-react-native/src/icons/Truck';
 export { WarningIcon as Warning } from 'phosphor-react-native/src/icons/Warning';
+export { WhatsappLogoIcon as WhatsappLogo } from 'phosphor-react-native/src/icons/WhatsappLogo';
 export { XIcon as X } from 'phosphor-react-native/src/icons/X';

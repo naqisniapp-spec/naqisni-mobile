@@ -70,6 +70,8 @@ export type Order = {
   auto: boolean | null;
   expected_at: string | null;
   sent_at: string | null;
+  supplier_phone?: string | null;
+  note?: string | null;
   created_at: string;
   supplier_response: string | null;
   store_id: string | null;
@@ -241,7 +243,7 @@ export async function loadOrder(id: string): Promise<Order | null> {
   const { data, error } = await supabase
     .from('purchase_orders')
     .select(
-      'id, supplier_name, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit, source))'
+      'id, supplier_name, supplier_phone, note, status, auto, expected_at, sent_at, created_at, supplier_response, store_id, purchase_order_lines(product_id, quantity, received_quantity, products(name, unit, source))'
     )
     .eq('id', id)
     .maybeSingle();
