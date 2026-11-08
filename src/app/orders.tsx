@@ -1,10 +1,10 @@
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
 import { Plus, Truck } from '@/components/icons';
-import { ScreenHeader } from '@/components/screen-header';
+import { StorePill } from '@/components/screen-header';
 import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
 import { loadOrders, type Business } from '@/lib/data';
 import { space } from '@/lib/theme';
@@ -15,9 +15,10 @@ export default function OrdersScreen() {
   const { c, t } = useApp();
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader
-        title={t.tabOrders}
-        right={
+      <Stack.Screen
+        options={{
+          title: t.tabOrders,
+          headerRight: () => (
           <Pressable
             onPress={() => router.push('/new-order')}
             accessibilityRole="button"
@@ -37,8 +38,12 @@ export default function OrdersScreen() {
               {t.newOrder}
             </Text>
           </Pressable>
-        }
+          ),
+        }}
       />
+      <View style={{ paddingHorizontal: space.lg, paddingTop: space.sm, alignItems: 'flex-start' }}>
+        <StorePill />
+      </View>
       <BusinessGate>{(b) => <Orders business={b} />}</BusinessGate>
     </View>
   );

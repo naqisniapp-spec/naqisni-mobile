@@ -11,7 +11,7 @@ const TAB_ICONS = {
   overview: { default: require('@/assets/images/tabs/overview.png'), selected: require('@/assets/images/tabs/overview-active.png') },
   products: { default: require('@/assets/images/tabs/products.png'), selected: require('@/assets/images/tabs/products-active.png') },
   alerts: { default: require('@/assets/images/tabs/alerts.png'), selected: require('@/assets/images/tabs/alerts-active.png') },
-  orders: { default: require('@/assets/images/tabs/orders.png'), selected: require('@/assets/images/tabs/orders-active.png') },
+  more: { default: require('@/assets/images/tabs/more.png'), selected: require('@/assets/images/tabs/more-active.png') },
   ask: { default: require('@/assets/images/tabs/ask.png'), selected: require('@/assets/images/tabs/ask-active.png') },
 };
 
@@ -48,13 +48,13 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>{t.tabAsk}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={TAB_ICONS.ask} renderingMode="template" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="orders">
-        <NativeTabs.Trigger.Label>{t.tabOrders}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={TAB_ICONS.orders} renderingMode="template" />
-      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="alerts">
         <NativeTabs.Trigger.Label>{t.tabAlerts}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={TAB_ICONS.alerts} renderingMode="template" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="more">
+        <NativeTabs.Trigger.Label>{t.tabMore}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon src={TAB_ICONS.more} renderingMode="template" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
