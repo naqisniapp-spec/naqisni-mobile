@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Linking, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
+import { AiInsightCard } from '@/components/ai-insight-card';
 import { BusinessGate } from '@/components/business-gate';
 import { PencilSimple } from '@/components/icons';
 import { Button, Card, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
@@ -97,6 +98,8 @@ function Product({ business }: { business: Business }) {
             ) : null}
           </Card>
         )}
+
+        <AiInsightCard businessId={business.id} productId={p.product_id} />
 
         {p.supplier_name && (
           <Card style={{ gap: 4 }} onPress={() => router.push({ pathname: '/supplier/[key]', params: { key: supplierKey(p.supplier_name!) } })}>

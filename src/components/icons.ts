@@ -25,6 +25,7 @@ export { PencilSimpleIcon as PencilSimple } from 'phosphor-react-native/src/icon
 export { PhoneIcon as Phone } from 'phosphor-react-native/src/icons/Phone';
 export { PlusIcon as Plus } from 'phosphor-react-native/src/icons/Plus';
 export { SignOutIcon as SignOut } from 'phosphor-react-native/src/icons/SignOut';
+export { SparkleIcon as Sparkle } from 'phosphor-react-native/src/icons/Sparkle';
 export { StorefrontIcon as Storefront } from 'phosphor-react-native/src/icons/Storefront';
 export { TrashIcon as Trash } from 'phosphor-react-native/src/icons/Trash';
 export { TrendDownIcon as TrendDown } from 'phosphor-react-native/src/icons/TrendDown';

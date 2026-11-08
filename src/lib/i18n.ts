@@ -383,6 +383,13 @@ const en = {
   monthsOfStock: (n: number) => `about ${n} months of stock`,
   noneMoved: 'none sold',
   fullReports: 'Weekly and monthly reports on naqisni.com',
+  // AI (switched off until launch)
+  aiExplains: 'Naqisni explains',
+  aiIntro: 'A short summary of what is happening with this product and what to do next.',
+  aiExplainProduct: 'Explain this product',
+  aiExplainAgain: 'Explain again',
+  aiThinking: 'Thinking…',
+  aiWrittenAt: (when: string) => `Written by AI from your stock and sales on ${when}. Check the numbers before you act.`,
 };
 
 export type Strings = typeof en;
@@ -768,6 +775,13 @@ const ar: Strings = {
   monthsOfStock: (n: number) => `مخزون يكفي نحو ${n} أشهر`,
   noneMoved: 'لم يُبع شيء',
   fullReports: 'التقارير الأسبوعية والشهرية على naqisni.com',
+  // الذكاء الاصطناعي (متوقف حتى الإطلاق)
+  aiExplains: 'نقصني يشرح',
+  aiIntro: 'ملخص قصير لما يحدث مع هذا المنتج وما يجب فعله بعد ذلك.',
+  aiExplainProduct: 'اشرح هذا المنتج',
+  aiExplainAgain: 'اشرح مرة أخرى',
+  aiThinking: 'جارٍ التفكير…',
+  aiWrittenAt: (when: string) => `كتبه الذكاء الاصطناعي من مخزونك ومبيعاتك في ${when}. تحقق من الأرقام قبل التنفيذ.`,
 };
 
 export const strings: Record<Lang, Strings> = { en, ar };
