@@ -7,7 +7,6 @@ import type { ComponentType, ReactNode } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
 import { Bell, CaretRight, ChartBar, ChatCircleDots, ClipboardText, Clock, ClockCounterClockwise, FileText, GearSix, Globe, Moon, SignOut, Storefront, Trash, Truck } from '@/components/icons';
-import { ScreenHeader } from '@/components/screen-header';
 import { Segmented, Text } from '@/components/ui';
 import { disablePush, enablePush, savedPushToken } from '@/lib/push';
 import { unreadCount } from '@/lib/support';
@@ -52,8 +51,7 @@ export default function MoreScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader title={t.tabMore} />
-      <ScrollView contentContainerStyle={{ padding: space.lg, paddingTop: 0, gap: space.xl, paddingBottom: space.xxl * 2 }}>
+      <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.xl, paddingBottom: space.xxl * 2 }}>
         <View style={[styles.profile, { backgroundColor: c.card, borderColor: c.hairline }]}>
           <View style={[styles.avatar, { backgroundColor: c.ink }]}>
             <Text size={22} weight="700" style={{ color: c.brand }}>
