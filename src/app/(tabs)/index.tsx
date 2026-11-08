@@ -69,7 +69,6 @@ function Overview({ business }: { business: Business }) {
         <Logo width={104} />
         <StorePill onDark />
       </Row>
-      <AskBar businessId={business.id} />
       <Text size={15} style={{ color: 'rgba(255,255,255,0.65)', marginTop: space.xl }}>
         {greeting(t)}
       </Text>
@@ -93,6 +92,7 @@ function Overview({ business }: { business: Business }) {
           </View>
         </View>
       )}
+      <AskBar businessId={business.id} />
     </View>
   );
 

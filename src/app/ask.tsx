@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Sparkle } from '@/components/icons';
 import { Text } from '@/components/ui';
+import { AiAnswer } from '@/components/ai-answer';
 import { askNaqisni, type ChatMessage } from '@/lib/ai';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
@@ -53,7 +54,7 @@ export default function AskScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t.askNaqisni }} />
+      <Stack.Screen options={{ title: t.askAssistant }} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <FlatList
           ref={list}
@@ -64,10 +65,19 @@ export default function AskScreen() {
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
             <View style={{ gap: space.md, paddingTop: space.xl }}>
-              <Sparkle size={34} color={c.brandDeep} weight="fill" />
-              <Text size={20} weight="700">
-                {t.askNaqisni}
-              </Text>
+              <View style={styles.icon}>
+                <Sparkle size={26} color={c.brand} weight="fill" />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+                <Text size={20} weight="700">
+                  {t.askAssistant}
+                </Text>
+                <View style={[styles.ai, { backgroundColor: c.brand }]}>
+                  <Text size={11} weight="700" style={{ color: c.onBrand }}>
+                    AI
+                  </Text>
+                </View>
+              </View>
               <Text tone="slate">{t.askIntro}</Text>
               <View style={{ gap: space.sm, marginTop: space.sm }}>
                 {t.askSuggestions.map((s) => (
@@ -83,20 +93,22 @@ export default function AskScreen() {
           }
           renderItem={({ item: m }) =>
             m.role === 'user' ? (
-              <View style={[styles.bubble, styles.mine, { backgroundColor: c.brand }]}>
-                <Text style={{ color: c.onBrand }}>{m.content}</Text>
+              <View style={[styles.bubble, styles.mine, { backgroundColor: '#10182B' }]}>
+                <Text style={{ color: '#FFFFFF' }}>{m.content}</Text>
               </View>
-            ) : (
-              <View style={[styles.bubble, styles.theirs, { backgroundColor: m.error ? c.alertSoft : c.card, borderColor: c.hairline }]}>
-                <Text tone={m.error ? 'alert' : 'ink'} style={{ lineHeight: 22 }}>
+            ) : m.error ? (
+              <View style={[styles.bubble, styles.theirs, { backgroundColor: c.alertSoft, borderColor: c.hairline }]}>
+                <Text tone="alert" style={{ lineHeight: 22 }}>
                   {m.content}
                 </Text>
               </View>
+            ) : (
+              <AiAnswer text={m.content} />
             )
           }
           ListFooterComponent={
             busy ? (
-              <View style={[styles.bubble, styles.theirs, { backgroundColor: c.card, borderColor: c.hairline, flexDirection: 'row', gap: space.sm, alignItems: 'center' }]}>
+              <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'center' }}>
                 <ActivityIndicator color={c.brandDeep} />
                 <Text tone="slate">{t.askLooking}</Text>
               </View>
@@ -134,6 +146,8 @@ export default function AskScreen() {
 }
 
 const styles = StyleSheet.create({
+  icon: { width: 52, height: 52, borderRadius: 14, backgroundColor: '#10182B', alignItems: 'center', justifyContent: 'center' },
+  ai: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: radius.pill },
   suggestion: { padding: space.md, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth },
   bubble: { maxWidth: '88%', paddingHorizontal: space.lg, paddingVertical: space.md, borderRadius: radius.lg },
   mine: { alignSelf: 'flex-end', borderBottomRightRadius: 4 },
