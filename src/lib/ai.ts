@@ -25,3 +25,10 @@ export function aiEnabled(businessId: string): Promise<boolean> {
 export function productInsight(productId: string, lang: 'en' | 'ar', refresh = false): Promise<Insight> {
   return webApi<Insight>('/api/ai/product-insight', { productId, lang, refresh });
 }
+
+export type ChatMessage = { role: 'user' | 'assistant'; content: string };
+
+/** Ask Naqisni: the conversation so far (newest question last); returns the answer. */
+export function askNaqisni(messages: ChatMessage[], lang: 'en' | 'ar'): Promise<{ answer: string }> {
+  return webApi<{ answer: string }>('/api/ai/chat', { messages, lang });
+}

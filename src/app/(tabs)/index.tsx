@@ -4,6 +4,7 @@ import { useCallback, type ComponentType } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AskBar } from '@/components/ask-bar';
 import { BusinessGate } from '@/components/business-gate';
 import { ArrowsDownUp, Barcode, CaretRight, ChatCircleDots, CheckCircle, Package, TrendDown, Truck, Warning } from '@/components/icons';
 import { Logo } from '@/components/logo';
@@ -68,6 +69,7 @@ function Overview({ business }: { business: Business }) {
         <Logo width={104} />
         <StorePill onDark />
       </Row>
+      <AskBar businessId={business.id} />
       <Text size={15} style={{ color: 'rgba(255,255,255,0.65)', marginTop: space.xl }}>
         {greeting(t)}
       </Text>

@@ -390,6 +390,15 @@ const en = {
   aiExplainAgain: 'Explain again',
   aiThinking: 'Thinking…',
   aiWrittenAt: (when: string) => `Written by AI from your stock and sales on ${when}. Check the numbers before you act.`,
+  // Ask Naqisni (AI, switched off until launch)
+  askNaqisni: 'Ask Naqisni',
+  askPlaceholder: 'Ask about your stock, sales or orders…',
+  askFollowUp: 'Ask a follow-up…',
+  askIntro: 'Ask anything about your stock, sales, orders and suppliers, or how to do something in Naqisni.',
+  askSuggestions: ['What should I order this week?', 'Which products will run out first?', 'What sold best in the last 30 days?', 'How do I record a delivery?'],
+  askLooking: 'Looking at your stock…',
+  askDisclaimer: 'Answers are written by AI from your Naqisni data. It can read, not change anything. Check important numbers.',
+  askSend: 'Ask',
 };
 
 export type Strings = typeof en;
@@ -782,6 +791,15 @@ const ar: Strings = {
   aiExplainAgain: 'اشرح مرة أخرى',
   aiThinking: 'جارٍ التفكير…',
   aiWrittenAt: (when: string) => `كتبه الذكاء الاصطناعي من مخزونك ومبيعاتك في ${when}. تحقق من الأرقام قبل التنفيذ.`,
+  // اسأل نقصني (ذكاء اصطناعي، متوقف حتى الإطلاق)
+  askNaqisni: 'اسأل نقصني',
+  askPlaceholder: 'اسأل عن مخزونك أو مبيعاتك أو طلباتك…',
+  askFollowUp: 'اسأل سؤالاً آخر…',
+  askIntro: 'اسأل أي شيء عن مخزونك ومبيعاتك وطلباتك ومورديك، أو كيف تفعل شيئاً في نقصني.',
+  askSuggestions: ['ماذا يجب أن أطلب هذا الأسبوع؟', 'أي المنتجات ستنفد أولاً؟', 'ما الأكثر مبيعاً في آخر 30 يوماً؟', 'كيف أسجّل استلام طلب؟'],
+  askLooking: 'جارٍ الاطلاع على مخزونك…',
+  askDisclaimer: 'الإجابات يكتبها الذكاء الاصطناعي من بيانات نقصني. يمكنه القراءة فقط ولا يغيّر شيئاً. تحقق من الأرقام المهمة.',
+  askSend: 'اسأل',
 };
 
 export const strings: Record<Lang, Strings> = { en, ar };

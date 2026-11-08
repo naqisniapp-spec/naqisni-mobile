@@ -62,6 +62,7 @@ function Navigator() {
           <Stack.Screen name="product-form" options={{ title: '' }} />
           <Stack.Screen name="count" options={{ title: '' }} />
           <Stack.Screen name="new-order" options={{ title: '' }} />
+          <Stack.Screen name="ask" options={{ title: '' }} />
           <Stack.Screen name="suppliers" options={{ title: '' }} />
           <Stack.Screen name="supplier/[key]" options={{ title: '' }} />
           <Stack.Screen name="expiry" options={{ title: '' }} />
