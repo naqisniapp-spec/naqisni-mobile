@@ -95,12 +95,12 @@ if (Platform.OS !== 'web') {
 }
 
 /** Calls a naqisni.com API route as the signed-in person (Bearer token + store). */
-export async function webApi<T>(path: string, body?: unknown): Promise<T> {
+export async function webApi<T>(path: string, body?: unknown, method?: 'GET' | 'POST' | 'DELETE'): Promise<T> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error('Not signed in');
   const res = await fetch(`${WEB_URL}${path}`, {
-    method: body === undefined ? 'GET' : 'POST',
+    method: method ?? (body === undefined ? 'GET' : 'POST'),
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export async function webApi<T>(path: string, body?: unknown): Promise<T> {
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  const json = (await res.json().catch(() => ({}))) as T & { error?: string };
-  if (!res.ok) throw new Error(json.error ?? `Request failed (${res.status})`);
+  const json = (await res.json().catch(() => ({}))) as T & { error?: string; message?: string };
+  if (!res.ok) throw new Error(json.error ?? json.message ?? `Request failed (${res.status})`);
   return json;
 }

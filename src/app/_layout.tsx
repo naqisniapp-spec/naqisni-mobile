@@ -64,6 +64,7 @@ function Navigator() {
           <Stack.Screen name="support/index" options={{ title: t.support }} />
           <Stack.Screen name="support/[id]" options={{ title: '' }} />
           <Stack.Screen name="support/new" options={{ presentation: 'formSheet', title: t.newTicket, sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true }} />
+          <Stack.Screen name="delete-account" options={{ title: t.deleteAccount }} />
           <Stack.Screen name="stores" options={{ presentation: 'formSheet', title: t.chooseStore, sheetAllowedDetents: [0.5, 1], sheetGrabberVisible: true }} />
         </Stack.Protected>
         <Stack.Protected guard={!session}>

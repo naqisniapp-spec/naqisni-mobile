@@ -10,6 +10,7 @@ export { CaretRightIcon as CaretRight } from 'phosphor-react-native/src/icons/Ca
 export { ChatCircleDotsIcon as ChatCircleDots } from 'phosphor-react-native/src/icons/ChatCircleDots';
 export { CheckCircleIcon as CheckCircle } from 'phosphor-react-native/src/icons/CheckCircle';
 export { ClockIcon as Clock } from 'phosphor-react-native/src/icons/Clock';
+export { FileTextIcon as FileText } from 'phosphor-react-native/src/icons/FileText';
 export { GlobeIcon as Globe } from 'phosphor-react-native/src/icons/Globe';
 export { MagnifyingGlassIcon as MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 export { MoonIcon as Moon } from 'phosphor-react-native/src/icons/Moon';
@@ -17,6 +18,7 @@ export { PackageIcon as Package } from 'phosphor-react-native/src/icons/Package'
 export { PhoneIcon as Phone } from 'phosphor-react-native/src/icons/Phone';
 export { SignOutIcon as SignOut } from 'phosphor-react-native/src/icons/SignOut';
 export { StorefrontIcon as Storefront } from 'phosphor-react-native/src/icons/Storefront';
+export { TrashIcon as Trash } from 'phosphor-react-native/src/icons/Trash';
 export { TrendDownIcon as TrendDown } from 'phosphor-react-native/src/icons/TrendDown';
 export { TruckIcon as Truck } from 'phosphor-react-native/src/icons/Truck';
 export { WarningIcon as Warning } from 'phosphor-react-native/src/icons/Warning';

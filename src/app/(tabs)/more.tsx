@@ -1,11 +1,12 @@
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
-import { Bell, CaretRight, ChatCircleDots, Globe, Moon, SignOut, Storefront } from '@/components/icons';
+import { Bell, CaretRight, ChatCircleDots, FileText, Globe, Moon, SignOut, Storefront, Trash } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Segmented, Text } from '@/components/ui';
 import { disablePush, enablePush, savedPushToken } from '@/lib/push';
@@ -76,6 +77,8 @@ export default function MoreScreen() {
           ) : null}
         </View>
 
+        {Platform.OS !== 'web' && <UpdateReady />}
+
         <Group>
           <Item Icon={ChatCircleDots} label={t.support} onPress={() => router.push('/support')} badge={unread || undefined} />
           {stores.length > 0 && (
@@ -131,7 +134,12 @@ export default function MoreScreen() {
 
         <Group>
           <Item Icon={Globe} label={t.openWebsite} onPress={() => WebBrowser.openBrowserAsync(`${WEB_URL}/dashboard`)} />
+          <Item Icon={FileText} label={t.privacyPolicy} onPress={() => WebBrowser.openBrowserAsync(`${WEB_URL}/privacy`)} />
           <Item Icon={SignOut} label={t.signOut} onPress={signOut} danger />
+        </Group>
+
+        <Group>
+          <Item Icon={Trash} label={t.deleteAccount} onPress={() => router.push('/delete-account')} danger />
         </Group>
 
         <Text tone="slate" size={12} style={{ textAlign: 'center' }}>
@@ -143,6 +151,24 @@ export default function MoreScreen() {
 }
 
 type IconType = ComponentType<{ size?: number; color?: string; weight?: 'regular' | 'bold' | 'fill' | 'duotone' }>;
+
+/** Shown when an over-the-air update has downloaded; it would otherwise apply on the next app start. */
+function UpdateReady() {
+  const { c, t } = useApp();
+  const { isUpdatePending } = Updates.useUpdates();
+  if (!isUpdatePending) return null;
+  return (
+    <Pressable
+      onPress={() => Updates.reloadAsync().catch(() => undefined)}
+      style={({ pressed }) => [styles.update, { backgroundColor: c.brandSoft, borderColor: c.brand, opacity: pressed ? 0.8 : 1 }]}
+      accessibilityRole="button">
+      <Text weight="700">{t.updateReady}</Text>
+      <Text tone="brand" size={14} weight="600">
+        {t.restartToUpdate}
+      </Text>
+    </Pressable>
+  );
+}
 
 function Group({ children }: { children: ReactNode }) {
   const { c } = useApp();
@@ -222,6 +248,7 @@ const styles = StyleSheet.create({
   profile: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.lg, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth },
   avatar: { width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   plan: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill },
+  update: { borderRadius: radius.lg, borderWidth: 1, padding: space.lg, gap: 2 },
   group: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
   item: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingVertical: 14 },
   divider: { borderTopWidth: StyleSheet.hairlineWidth, marginTop: -StyleSheet.hairlineWidth },
