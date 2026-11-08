@@ -26,7 +26,7 @@ function Product({ business }: { business: Business }) {
   const unit = p.unit ? ` ${p.unit}` : '';
   const date = (iso: string) =>
     new Date(iso).toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  const typeLabel: Record<string, string> = { sale: t.sale, restock: t.restock, return: t.return, adjustment: t.adjustment };
+  const typeLabel: Record<string, string> = { sale: t.sale, restock: t.restock, return: t.return, adjustment: t.adjustment, waste: t.waste, transfer: t.transfer };
 
   const details: [string, string | null][] = [
     [t.brand, p.brand],
@@ -154,7 +154,7 @@ function Product({ business }: { business: Business }) {
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: c.bg, borderTopColor: c.hairline }]}>
-        <Button title={t.recordChange} onPress={() => router.push({ pathname: '/record', params: { productId: p.product_id, name: p.name, unit: p.unit ?? '' } })} />
+        <Button title={t.recordChange} onPress={() => router.push({ pathname: '/record', params: { productId: p.product_id, name: p.name, unit: p.unit ?? '', source: p.source ?? 'manual', stock: String(p.current_stock) } })} />
       </View>
     </>
   );

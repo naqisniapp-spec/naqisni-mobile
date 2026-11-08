@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
-import { Bell, CaretRight, ChatCircleDots, FileText, Globe, Moon, SignOut, Storefront, Trash } from '@/components/icons';
+import { Bell, CaretRight, ChatCircleDots, ClipboardText, ClockCounterClockwise, FileText, Globe, Moon, SignOut, Storefront, Trash } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Segmented, Text } from '@/components/ui';
 import { disablePush, enablePush, savedPushToken } from '@/lib/push';
@@ -78,6 +78,11 @@ export default function MoreScreen() {
         </View>
 
         {Platform.OS !== 'web' && <UpdateReady />}
+
+        <Group>
+          <Item Icon={ClipboardText} label={t.countStock} hint={t.countStockHint} onPress={() => router.push('/count')} />
+          <Item Icon={ClockCounterClockwise} label={t.stockHistory} onPress={() => router.push('/history')} />
+        </Group>
 
         <Group>
           <Item Icon={ChatCircleDots} label={t.support} onPress={() => router.push('/support')} badge={unread || undefined} />
