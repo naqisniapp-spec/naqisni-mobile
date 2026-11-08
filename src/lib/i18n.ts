@@ -18,6 +18,7 @@ const en = {
   tabAlerts: 'Alerts',
   tabOrders: 'Orders',
   tabMore: 'More',
+  tabAsk: 'Ask AI',
 
   hello: 'Hello',
   goodMorning: 'Good morning',
@@ -423,6 +424,7 @@ const ar: Strings = {
   tabAlerts: 'التنبيهات',
   tabOrders: 'الطلبات',
   tabMore: 'المزيد',
+  tabAsk: 'اسأل الذكاء',
 
   hello: 'مرحباً',
   goodMorning: 'صباح الخير',
