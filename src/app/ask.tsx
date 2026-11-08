@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Sparkle } from '@/components/icons';
@@ -22,6 +22,21 @@ export default function AskScreen() {
   const [busy, setBusy] = useState(false);
   const list = useRef<FlatList<Msg>>(null);
   const askedFirst = useRef(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  // Keep the question box above the keyboard on Android too (the app runs
+  // edge-to-edge, so the window no longer resizes for the keyboard by itself).
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardOpen(true);
+      list.current?.scrollToEnd({ animated: true });
+    });
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   async function ask(question: string) {
     const qq = question.trim();
@@ -55,7 +70,7 @@ export default function AskScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t.askAssistant }} />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={insets.top + (Platform.OS === 'ios' ? 44 : 56)}>
         <FlatList
           ref={list}
           data={msgs}
@@ -119,7 +134,7 @@ export default function AskScreen() {
             ) : undefined
           }
         />
-        <View style={[styles.inputRow, { borderTopColor: c.hairline, backgroundColor: c.bg, paddingBottom: Math.max(insets.bottom, space.md) }]}>
+        <View style={[styles.inputRow, { borderTopColor: c.hairline, backgroundColor: c.bg, paddingBottom: keyboardOpen ? space.sm : Math.max(insets.bottom, space.md) }]}>
           <TextInput
             value={text}
             onChangeText={setText}
