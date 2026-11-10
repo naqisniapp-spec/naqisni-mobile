@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 
-import { Button, Card, fontFor, Loading, Text } from '@/components/ui';
+import { Button, Card, fontFor, Loading, panel, Text } from '@/components/ui';
 import { supabase, webApi } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
@@ -65,7 +65,7 @@ export default function DeleteAccountScreen() {
   if (pending === null) return <Loading />;
 
   return (
-    <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg }} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={[panel(c), { gap: space.lg }]} keyboardShouldPersistTaps="handled">
       <Text tone="slate">{t.deleteIntro}</Text>
       {pending ? (
         <>

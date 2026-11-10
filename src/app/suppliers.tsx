@@ -4,7 +4,7 @@ import { FlatList, RefreshControl, StyleSheet, TextInput, View } from 'react-nat
 
 import { BusinessGate } from '@/components/business-gate';
 import { MagnifyingGlass, Truck } from '@/components/icons';
-import { Card, Empty, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { Card, Empty, ErrorState, Loading, panel, Row, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import { loadSuppliers } from '@/lib/suppliers';
 import { radius, space } from '@/lib/theme';
@@ -38,7 +38,7 @@ function Suppliers({ business }: { business: Business }) {
     <FlatList
       data={rows}
       keyExtractor={(s) => s.key}
-      contentContainerStyle={{ padding: space.lg, gap: space.sm, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { gap: space.sm, marginBottom: space.xxl * 2 }]}
       keyboardDismissMode="on-drag"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
       ListHeaderComponent={

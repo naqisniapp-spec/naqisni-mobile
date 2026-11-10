@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import type { Risk } from '@/lib/stock';
-import { radius, space } from '@/lib/theme';
+import { palette, radius, space, type Colors } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
 type Tone = 'ink' | 'slate' | 'brand' | 'alert' | 'amber';
@@ -94,6 +94,38 @@ export function Button({
       ]}>
       {loading ? <ActivityIndicator color={fg} /> : <RNText style={[{ color: fg, fontSize: 16 }, fontFor('600', lang)]}>{title}</RNText>}
     </Pressable>
+  );
+}
+
+/**
+ * The soft rounded panel that screen content sits on (the "new look").
+ * Use as a scroll view's contentContainerStyle, or on a plain View.
+ */
+export function panel(c: Colors): ViewStyle {
+  const dark = c.bg === palette.dark.bg;
+  return {
+    marginHorizontal: space.md,
+    marginTop: space.sm,
+    padding: space.md,
+    borderRadius: 28,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: c.hairline,
+    backgroundColor: dark ? palette.light.ink : 'rgba(255,255,255,0.7)',
+  };
+}
+
+/** Soft green circles behind a screen's header. Put it first inside the header view. */
+export function Glows({ top = 0 }: { top?: number }) {
+  const { c, dark } = useApp();
+  const glow = (size: number, opacity: number, where: ViewStyle) => (
+    <View pointerEvents="none" style={[{ position: 'absolute', width: size, height: size, borderRadius: size / 2, backgroundColor: c.brand, opacity }, where]} />
+  );
+  return (
+    <>
+      {glow(96, dark ? 0.16 : 0.18, { end: 18, top: top + 6 })}
+      {glow(60, dark ? 0.1 : 0.12, { end: 8, top: top + 122 })}
+      {glow(66, dark ? 0.12 : 0.14, { start: -22, bottom: -6 })}
+    </>
   );
 }
 

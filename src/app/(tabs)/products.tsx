@@ -6,7 +6,7 @@ import { BusinessGate } from '@/components/business-gate';
 import { Barcode, MagnifyingGlass, Plus } from '@/components/icons';
 import { ProductItem } from '@/components/product-item';
 import { ScreenHeader } from '@/components/screen-header';
-import { Button, Empty, ErrorState, Loading, Text } from '@/components/ui';
+import { Button, Empty, ErrorState, Loading, panel, Text } from '@/components/ui';
 import { loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
 import { palette, radius, space } from '@/lib/theme';
@@ -87,7 +87,7 @@ function Products({ business }: { business: Business }) {
       data={rows}
       keyExtractor={(p) => p.product_id}
       renderItem={({ item }) => <ProductItem p={item} />}
-      contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { marginBottom: space.xxl * 2 }]}
       keyboardDismissMode="on-drag"
       initialNumToRender={14}
       windowSize={9}

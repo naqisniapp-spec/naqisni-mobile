@@ -38,7 +38,7 @@ export const palette = {
 
 export type Colors = typeof palette.light;
 
-export const radius = { sm: 6, md: 10, lg: 16, pill: 999 };
+export const radius = { sm: 6, md: 10, lg: 20, pill: 999 };
 /** On the web the tab bar floats at the top of the page; leave room under it. Phones: 0 (tab bar is at the bottom). */
 export const topBarSpace = Platform.OS === 'web' ? 76 : 0;
 

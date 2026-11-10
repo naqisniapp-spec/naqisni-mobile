@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Linking, Platform, Pressable, RefreshControl, Scr
 
 import { BusinessGate } from '@/components/business-gate';
 import { Phone, WhatsappLogo } from '@/components/icons';
-import { Button, Card, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, RiskChip, Row, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import { callingCode, whatsappNumber } from '@/lib/orders';
 import { isSynced } from '@/lib/products';
@@ -39,7 +39,7 @@ function SupplierView({ business, supplierKey }: { business: Business; supplierK
       <Stack.Screen options={{ title: s.name }} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
         <ScrollView
-          contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }}
+          contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]}
           keyboardShouldPersistTaps="handled"
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
           <View style={{ gap: 4 }}>

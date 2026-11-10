@@ -4,7 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Sty
 
 import { BusinessGate } from '@/components/business-gate';
 import { ClockCounterClockwise, MagnifyingGlass } from '@/components/icons';
-import { Empty, ErrorState, Loading, Text } from '@/components/ui';
+import { Empty, ErrorState, Loading, panel, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import { sourceName } from '@/lib/products';
 import { qty } from '@/lib/stock';
@@ -139,7 +139,7 @@ function History({ business }: { business: Business }) {
     <FlatList
       data={moves}
       keyExtractor={(m) => m.id}
-      contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { marginBottom: space.xxl * 2 }]}
       keyboardDismissMode="on-drag"
       ListHeaderComponent={header}
       refreshControl={<RefreshControl refreshing={busy === 'refreshing'} onRefresh={refresh} tintColor={c.brandDeep} />}

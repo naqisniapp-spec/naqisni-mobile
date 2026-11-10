@@ -4,7 +4,7 @@ import { FlatList, KeyboardAvoidingView, Linking, Platform, Pressable, StyleShee
 
 import { BusinessGate } from '@/components/business-gate';
 import { Check, Truck, WhatsappLogo } from '@/components/icons';
-import { Button, Card, Empty, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
+import { Button, Card, Empty, ErrorState, Loading, panel, RiskChip, Row, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import {
   callingCode,
@@ -58,7 +58,7 @@ function Planner({ business, supplier }: { business: Business; supplier?: string
     <FlatList
       data={data.groups}
       keyExtractor={(g) => g.key}
-      contentContainerStyle={{ padding: space.lg, gap: space.sm, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { gap: space.sm, marginBottom: space.xxl * 2 }]}
       ListHeaderComponent={
         <Text tone="slate" size={14} style={{ marginBottom: space.sm }}>
           {t.newOrderIntro}

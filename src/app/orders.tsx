@@ -5,7 +5,7 @@ import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { BusinessGate } from '@/components/business-gate';
 import { Plus, Truck } from '@/components/icons';
 import { StorePill } from '@/components/screen-header';
-import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
+import { Card, Empty, ErrorState, Loading, panel, Row, Segmented, Text } from '@/components/ui';
 import { loadOrders, type Business } from '@/lib/data';
 import { space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
@@ -78,7 +78,7 @@ function Orders({ business }: { business: Business }) {
         <FlatList
           data={rows}
           keyExtractor={(o) => o.id}
-          contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
+          contentContainerStyle={[panel(c), { marginBottom: space.xxl * 2 }]}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
           ListEmptyComponent={<Empty text={t.noOrders} icon={<Truck size={40} color={c.slate} weight="duotone" />} />}
           renderItem={({ item: o }) => (

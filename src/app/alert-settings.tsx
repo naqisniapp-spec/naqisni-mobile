@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
-import { Button, Card, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, Row, Text } from '@/components/ui';
 import { loadAlertSettings, saveAlertSettings, type AlertSettings } from '@/lib/alert-settings';
 import type { Business } from '@/lib/data';
 import { radius, space } from '@/lib/theme';
@@ -68,7 +68,7 @@ function Form({ business, initial }: { business: Business; initial: AlertSetting
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
-      <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]} keyboardShouldPersistTaps="handled">
         {!owner ? (
           <View style={[styles.notice, { backgroundColor: c.amberSoft }]}>
             <Text tone="amber">{t.ownerOnly}</Text>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
-import { Button, Card, Empty, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { Button, Card, Empty, ErrorState, Loading, panel, Row, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import { formatAmount, loadReport, SLOW_MONTHS } from '@/lib/reports';
 import { qty } from '@/lib/stock';
@@ -58,7 +58,7 @@ function Reports({ business }: { business: Business }) {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
       {header}
       {r.products === 0 ? (

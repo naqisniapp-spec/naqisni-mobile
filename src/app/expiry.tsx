@@ -4,7 +4,7 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from '
 
 import { BusinessGate } from '@/components/business-gate';
 import { Clock } from '@/components/icons';
-import { Card, Empty, ErrorState, Loading, Text } from '@/components/ui';
+import { Card, Empty, ErrorState, Loading, panel, Text } from '@/components/ui';
 import { daysToExpiry, discardBatch, loadExpiring, type ExpiringBatch } from '@/lib/batches';
 import type { Business } from '@/lib/data';
 import { qty } from '@/lib/stock';
@@ -64,7 +64,7 @@ function Expiry({ business }: { business: Business }) {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
       <Text tone="slate" size={14}>
         {t.expiryIntro}

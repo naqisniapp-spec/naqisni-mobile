@@ -5,7 +5,7 @@ import { Linking, Pressable, RefreshControl, ScrollView, StyleSheet, View } from
 import { AiInsightCard } from '@/components/ai-insight-card';
 import { BusinessGate } from '@/components/business-gate';
 import { PencilSimple } from '@/components/icons';
-import { Button, Card, ErrorState, Loading, RiskChip, Row, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, RiskChip, Row, Text } from '@/components/ui';
 import { daysToExpiry, loadProductBatches } from '@/lib/batches';
 import { loadProduct, type Business } from '@/lib/data';
 import { supplierKey } from '@/lib/suppliers';
@@ -63,7 +63,7 @@ function Product({ business }: { business: Business }) {
         }}
       />
       <ScrollView
-        contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: 120 }}
+        contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: 120 }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
         <Row style={{ gap: space.lg, alignItems: 'flex-start' }}>
           {p.image_url ? <Image source={p.image_url} style={styles.photo} contentFit="cover" transition={200} /> : null}

@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CaretDown, Storefront } from '@/components/icons';
-import { Text } from '@/components/ui';
+import { Glows, Text } from '@/components/ui';
 import { radius, space, topBarSpace } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
 
@@ -40,7 +40,8 @@ export function ScreenHeader({ title, right }: { title: string; right?: ReactNod
   const { c } = useApp();
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.wrap, { paddingTop: insets.top + topBarSpace + space.md, backgroundColor: c.bg }]}>
+    <View style={[styles.wrap, { paddingTop: insets.top + topBarSpace + space.md, backgroundColor: c.bg, overflow: 'hidden' }]}>
+      <Glows top={insets.top - 30} />
       <View style={styles.row}>
         <Text size={30} weight="700" style={{ flex: 1, letterSpacing: -0.5 }} numberOfLines={1}>
           {title}

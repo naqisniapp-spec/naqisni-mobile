@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BusinessGate } from '@/components/business-gate';
-import { Button, Card, ErrorState, Loading, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, Text } from '@/components/ui';
 import type { Business } from '@/lib/data';
 import { loadSupport, shortWhen, ticketUnread, type Ticket } from '@/lib/support';
 import { radius, space } from '@/lib/theme';
@@ -24,7 +24,7 @@ function Support({ business }: { business: Business }) {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }}
+      contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}>
       <Text tone="slate">{t.supportIntro}</Text>
       <Button title={t.newTicket} onPress={() => router.push('/support/new')} />

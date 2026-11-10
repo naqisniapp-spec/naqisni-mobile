@@ -5,7 +5,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 
 import { BusinessGate } from '@/components/business-gate';
 import { Barcode, Camera, Trash } from '@/components/icons';
-import { Button, Card, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, Row, Text } from '@/components/ui';
 import type { Business, Product } from '@/lib/data';
 import { waitFor } from '@/lib/picker';
 import {
@@ -131,7 +131,7 @@ function ProductForm({ business, product }: { business: Business; product?: Prod
     <>
       <Stack.Screen options={{ title: product ? t.editProduct : t.addProduct }} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={90}>
-        <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xxl * 2 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]} keyboardShouldPersistTaps="handled">
           {/* Photo */}
           <Row style={{ gap: space.lg }}>
             <Pressable

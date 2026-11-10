@@ -8,10 +8,10 @@ import { ArrowsDownUp, Barcode, CaretRight, ChatCircleDots, CheckCircle, Package
 import { Logo } from '@/components/logo';
 import { ProductItem } from '@/components/product-item';
 import { StorePill } from '@/components/screen-header';
-import { Card, ErrorState, Loading, riskColors, Row, Text } from '@/components/ui';
+import { Card, ErrorState, Glows, Loading, panel, riskColors, Row, Text } from '@/components/ui';
 import { loadAlerts, loadOrders, loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
-import { palette, space, topBarSpace } from '@/lib/theme';
+import { space, topBarSpace } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
 
@@ -32,7 +32,7 @@ function greeting(t: ReturnType<typeof useApp>['t']) {
 }
 
 function Overview({ business }: { business: Business }) {
-  const { c, t, rtl, dark, scopeKey } = useApp();
+  const { c, t, rtl, scopeKey } = useApp();
   const insets = useSafeAreaInsets();
   const { data, error, loading, refreshing, refresh } = useLoad(
     async () => {
@@ -55,9 +55,7 @@ function Overview({ business }: { business: Business }) {
   // The header sits straight on the page colour (light or dark), with soft green glows behind it.
   const hero = (
     <View style={[styles.hero, { paddingTop: insets.top + topBarSpace + space.md }]}>
-      <View pointerEvents="none" style={[styles.glow, { width: 96, height: 96, end: 18, top: insets.top + 6, backgroundColor: c.brand, opacity: dark ? 0.16 : 0.18 }]} />
-      <View pointerEvents="none" style={[styles.glow, { width: 60, height: 60, end: 8, top: insets.top + 122, backgroundColor: c.brand, opacity: dark ? 0.1 : 0.12 }]} />
-      <View pointerEvents="none" style={[styles.glow, { width: 66, height: 66, start: -22, bottom: -6, backgroundColor: c.brand, opacity: dark ? 0.12 : 0.14 }]} />
+      <Glows top={insets.top} />
       <Row style={{ justifyContent: 'space-between', gap: space.md }}>
         <Logo width={108} />
         <StorePill />
@@ -123,7 +121,7 @@ function Overview({ business }: { business: Business }) {
       {hero}
 
       {/* Everything below the header sits on one soft rounded panel */}
-      <View style={[styles.body, { backgroundColor: dark ? palette.light.ink : 'rgba(255,255,255,0.7)', borderColor: c.hairline }]}>
+      <View style={[panel(c), { marginTop: 0, paddingBottom: space.lg }]}>
         {/* Status tiles */}
         <View style={styles.tiles}>
           {tiles.map(({ risk, label, Icon }) => {
@@ -249,14 +247,6 @@ function SectionTitle({ title, onSeeAll }: { title: string; onSeeAll?: () => voi
 
 const styles = StyleSheet.create({
   hero: { paddingHorizontal: space.xl, paddingBottom: space.xl, overflow: 'hidden' },
-  glow: { position: 'absolute', borderRadius: 999 },
-  body: {
-    marginHorizontal: space.md,
-    padding: space.md,
-    paddingBottom: space.lg,
-    borderRadius: 28,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
   tile: {
     flexBasis: '45%',

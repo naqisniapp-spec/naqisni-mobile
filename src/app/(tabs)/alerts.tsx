@@ -5,7 +5,7 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-nat
 import { BusinessGate } from '@/components/business-gate';
 import { CheckCircle, TrendDown, Warning } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
-import { Card, Empty, ErrorState, Loading, Row, Segmented, Text } from '@/components/ui';
+import { Card, Empty, ErrorState, Loading, panel, Row, Segmented, Text } from '@/components/ui';
 import { acknowledgeAlert, loadAlerts, type Business } from '@/lib/data';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
@@ -60,7 +60,7 @@ function Alerts({ business }: { business: Business }) {
         <FlatList
           data={data ?? []}
           keyExtractor={(a) => a.id}
-          contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: space.xxl * 2 }}
+          contentContainerStyle={[panel(c), { marginBottom: space.xxl * 2 }]}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brandDeep} />}
           ListEmptyComponent={<Empty text={t.noAlerts} icon={<CheckCircle size={40} color={c.brandDeep} weight="duotone" />} />}
           renderItem={({ item: a }) => {

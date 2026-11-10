@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
-import { Button, Card, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { Button, Card, ErrorState, Loading, panel, Row, Text } from '@/components/ui';
 import { WhatsappLogo } from '@/components/icons';
 import { loadOrder, receiveDelivery } from '@/lib/data';
 import { callingCode, loadOrderBusiness, markSent, orderMessage, whatsappLink, whatsappNumber } from '@/lib/orders';
@@ -111,7 +111,7 @@ export default function OrderScreen() {
   return (
     <>
       <Stack.Screen options={{ title: order.supplier_name ?? '' }} />
-      <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: 140 }} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: 140 }]} keyboardShouldPersistTaps="handled">
         <View style={{ gap: 4 }}>
           <Text size={22} weight="800">
             {order.supplier_name ?? '—'}
