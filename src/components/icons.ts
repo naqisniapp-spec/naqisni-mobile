@@ -33,3 +33,7 @@ export { TruckIcon as Truck } from 'phosphor-react-native/src/icons/Truck';
 export { WarningIcon as Warning } from 'phosphor-react-native/src/icons/Warning';
 export { WhatsappLogoIcon as WhatsappLogo } from 'phosphor-react-native/src/icons/WhatsappLogo';
 export { XIcon as X } from 'phosphor-react-native/src/icons/X';
+export { ArrowCircleUpIcon as ArrowCircleUp } from 'phosphor-react-native/src/icons/ArrowCircleUp';
+export { MegaphoneIcon as Megaphone } from 'phosphor-react-native/src/icons/Megaphone';
+export { ProhibitIcon as Prohibit } from 'phosphor-react-native/src/icons/Prohibit';
+export { WrenchIcon as Wrench } from 'phosphor-react-native/src/icons/Wrench';

@@ -8,8 +8,9 @@ import { loadSupport, shortWhen, ticketUnread, type Ticket } from '@/lib/support
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
-export default function SupportScreen() {
+function SupportScreen() {
   return <BusinessGate>{(b) => <Support business={b} />}</BusinessGate>;
 }
 
@@ -98,3 +99,5 @@ const styles = StyleSheet.create({
   list: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden' },
   unread: { width: 10, height: 10, borderRadius: 5 },
 });
+
+export default gated('support', SupportScreen);

@@ -13,10 +13,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppGate } from '@/components/app-gate';
 import { Intro } from '@/components/intro';
 import { Loading } from '@/components/ui';
 import { refreshPush } from '@/lib/push';
 import { AppProvider, useApp } from '@/providers/app-provider';
+import { RemoteConfigProvider } from '@/providers/remote-config-provider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -91,6 +93,12 @@ function NotificationTaps() {
     if (typeof url !== 'string') return;
     if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
     else if (url === '/alerts') router.push('/alerts');
+    // Notifications sent by Naqisni from naqisni.com/admin/mobile.
+    else if (url === '/products') router.push('/products');
+    else if (url === '/orders') router.push('/orders');
+    else if (url === '/support') router.push('/support');
+    else if (url === '/more') router.push('/more');
+    else if (url === '/') router.push('/');
     Notifications.clearLastNotificationResponse();
   }, [lastTap]);
   return null;
@@ -111,7 +119,9 @@ function Shell() {
   const finishIntro = useCallback(() => setIntroDone(true), []);
   return (
     <View style={{ flex: 1 }}>
-      <Navigator fontsReady={fontsReady} />
+      <AppGate>
+        <Navigator fontsReady={fontsReady} />
+      </AppGate>
       {introDone ? null : <Intro appReady={ready && fontsReady} onShown={hideNativeSplash} onDone={finishIntro} />}
     </View>
   );
@@ -121,7 +131,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProvider>
-        <Shell />
+        <RemoteConfigProvider>
+          <Shell />
+        </RemoteConfigProvider>
       </AppProvider>
     </GestureHandlerRootView>
   );

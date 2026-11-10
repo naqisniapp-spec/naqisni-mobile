@@ -21,9 +21,10 @@ import {
 } from '@/lib/support';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /** One chat: a ticket's, or the General chat (id = "general"). Updates live. */
-export default function ChatScreen() {
+function ChatScreen() {
   return <BusinessGate>{(b) => <Chat business={b} />}</BusinessGate>;
 }
 
@@ -197,3 +198,5 @@ const styles = StyleSheet.create({
   send: { height: 44, paddingHorizontal: space.lg, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
   closed: { borderTopWidth: StyleSheet.hairlineWidth, padding: space.lg },
 });
+
+export default gated('support', ChatScreen);

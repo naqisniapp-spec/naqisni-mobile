@@ -15,9 +15,18 @@ import { useLoad } from '@/lib/use-load';
 import { supabase, WEB_URL } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 export default function MoreScreen() {
   const { c, t, session, business, store, stores, allStores, lang, setLang, themePref, setThemePref } = useApp();
+  const on = {
+    count: useFeature('count'),
+    history: useFeature('history'),
+    expiry: useFeature('expiry'),
+    suppliers: useFeature('suppliers'),
+    reports: useFeature('reports'),
+    support: useFeature('support'),
+  };
   const [pushOn, setPushOn] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const [pushNote, setPushNote] = useState<string | null>(null);
@@ -79,20 +88,22 @@ export default function MoreScreen() {
 
         {Platform.OS !== 'web' && <UpdateReady />}
 
+        {(on.count || on.history || on.expiry) && (
         <Group>
-          <Item Icon={ClipboardText} label={t.countStock} hint={t.countStockHint} onPress={() => router.push('/count')} />
-          <Item Icon={ClockCounterClockwise} label={t.stockHistory} onPress={() => router.push('/history')} />
-          <Item Icon={Clock} label={t.expiryDates} onPress={() => router.push('/expiry')} />
+          {on.count && <Item Icon={ClipboardText} label={t.countStock} hint={t.countStockHint} onPress={() => router.push('/count')} />}
+          {on.history && <Item Icon={ClockCounterClockwise} label={t.stockHistory} onPress={() => router.push('/history')} />}
+          {on.expiry && <Item Icon={Clock} label={t.expiryDates} onPress={() => router.push('/expiry')} />}
         </Group>
+        )}
 
         <Group>
-          <Item Icon={Truck} label={t.suppliers} onPress={() => router.push('/suppliers')} />
-          <Item Icon={ChartBar} label={t.reports} onPress={() => router.push('/reports')} />
+          {on.suppliers && <Item Icon={Truck} label={t.suppliers} onPress={() => router.push('/suppliers')} />}
+          {on.reports && <Item Icon={ChartBar} label={t.reports} onPress={() => router.push('/reports')} />}
           <Item Icon={GearSix} label={t.alertSettings} onPress={() => router.push('/alert-settings')} />
         </Group>
 
         <Group>
-          <Item Icon={ChatCircleDots} label={t.support} onPress={() => router.push('/support')} badge={unread || undefined} />
+          {on.support && <Item Icon={ChatCircleDots} label={t.support} onPress={() => router.push('/support')} badge={unread || undefined} />}
           {stores.length > 0 && (
             <Item
               Icon={Storefront}

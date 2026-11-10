@@ -12,11 +12,13 @@ import type { Risk } from '@/lib/stock';
 import { palette, radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 type Filter = 'all' | Risk;
 
 export default function ProductsScreen() {
   const { c, t } = useApp();
+  const scanOn = useFeature('scan');
   return (
     <View style={{ flex: 1 }}>
       <ScreenHeader
@@ -30,6 +32,7 @@ export default function ProductsScreen() {
             accessibilityLabel={t.addProduct}>
             <Plus size={20} color={c.onBrand} weight="bold" />
           </Pressable>
+          {scanOn && (
           <Pressable
             onPress={() => router.push('/scan')}
             style={({ pressed }) => [styles.scanBtn, { backgroundColor: palette.light.ink, opacity: pressed ? 0.8 : 1 }]}
@@ -40,6 +43,7 @@ export default function ProductsScreen() {
               {t.scan}
             </Text>
           </Pressable>
+          )}
           </View>
         }
       />

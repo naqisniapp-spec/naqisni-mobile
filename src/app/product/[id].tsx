@@ -13,6 +13,7 @@ import { qty } from '@/lib/stock';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 export default function ProductScreen() {
   return <BusinessGate>{(b) => <Product business={b} />}</BusinessGate>;
@@ -21,6 +22,9 @@ export default function ProductScreen() {
 function Product({ business }: { business: Business }) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { c, t, lang, scopeKey, storeName } = useApp();
+  const aiOn = useFeature('ask_ai');
+  const suppliersOn = useFeature('suppliers');
+  const expiryOn = useFeature('expiry');
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadProduct(business.id, id), `${scopeKey}:${id}`);
   const batches = useLoad(() => loadProductBatches(id), `${scopeKey}:${id}:batches`);
 
@@ -99,10 +103,10 @@ function Product({ business }: { business: Business }) {
           </Card>
         )}
 
-        <AiInsightCard businessId={business.id} productId={p.product_id} />
+        {aiOn && <AiInsightCard businessId={business.id} productId={p.product_id} />}
 
         {p.supplier_name && (
-          <Card style={{ gap: 4 }} onPress={() => router.push({ pathname: '/supplier/[key]', params: { key: supplierKey(p.supplier_name!) } })}>
+          <Card style={{ gap: 4 }} onPress={suppliersOn ? () => router.push({ pathname: '/supplier/[key]', params: { key: supplierKey(p.supplier_name!) } }) : undefined}>
             <Text tone="slate" size={13}>
               {t.supplier}
             </Text>
@@ -144,12 +148,14 @@ function Product({ business }: { business: Business }) {
             <Text tone="slate" size={13} weight="600">
               {t.batchesTitle}
             </Text>
+            {expiryOn && (
             <Text
               tone="brand"
               weight="600"
               onPress={() => router.push({ pathname: '/batch', params: { productId: p.product_id, name: p.name, unit: p.unit ?? '', source: p.source ?? 'manual' } })}>
               + {t.addBatch}
             </Text>
+            )}
           </Row>
           {(batches.data ?? []).length === 0 ? (
             <Text tone="slate" size={13}>

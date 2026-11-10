@@ -14,6 +14,7 @@ import { AndroidImportance } from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import type { Lang } from '@/lib/i18n';
+import { installId } from '@/lib/remote-config';
 import { supabase } from '@/lib/supabase';
 
 const K_TOKEN = 'naqisni_push_token';
@@ -71,6 +72,7 @@ export async function enablePush(businessId: string, userId: string, lang: Lang)
         business_id: businessId,
         platform: Platform.OS === 'ios' ? 'ios' : 'android',
         lang,
+        install_id: await installId(),
         last_seen_at: new Date().toISOString(),
         disabled_at: null,
       },

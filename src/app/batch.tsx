@@ -7,9 +7,10 @@ import { addBatch, parseDate } from '@/lib/batches';
 import { qty } from '@/lib/stock';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /** Add a batch with its expiry date (and optionally add it to the stock), like the website's product page. */
-export default function BatchScreen() {
+function BatchScreen() {
   const { productId, name, unit, source } = useLocalSearchParams<{ productId: string; name?: string; unit?: string; source?: string }>();
   const { c, t, business } = useApp();
   const canChangeStock = !source || source === 'manual';
@@ -85,3 +86,5 @@ export default function BatchScreen() {
 const styles = StyleSheet.create({
   input: { minHeight: 52, borderWidth: 1, borderRadius: radius.md, paddingHorizontal: space.lg, fontSize: 16 },
 });
+
+export default gated('expiry', BatchScreen);

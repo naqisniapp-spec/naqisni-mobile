@@ -22,6 +22,7 @@ import { qty } from '@/lib/stock';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 const DAY = 86_400_000;
 
@@ -30,7 +31,7 @@ const DAY = 86_400_000;
  * reorder come first), then tick products, set quantities and the delivery
  * day, and create it — optionally sending it on WhatsApp straight away.
  */
-export default function NewOrderScreen() {
+function NewOrderScreen() {
   const { supplier } = useLocalSearchParams<{ supplier?: string }>();
   const { t } = useApp();
   return (
@@ -306,3 +307,5 @@ const styles = StyleSheet.create({
   footer: { padding: space.lg, paddingBottom: space.xxl, gap: space.sm, borderTopWidth: StyleSheet.hairlineWidth },
   wa: { minHeight: 50, borderRadius: radius.md, backgroundColor: '#1FA855', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm },
 });
+
+export default gated('orders', NewOrderScreen);

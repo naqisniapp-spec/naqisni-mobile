@@ -13,15 +13,18 @@ import { loadSupplier, saveSupplier, SupplierError, type Supplier, type Supplier
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
+import { gated } from '@/components/app-gate';
 
 /** One supplier: contact, products, orders, delivery record, and its name, phone and order settings. */
-export default function SupplierScreen() {
+function SupplierScreen() {
   const { key } = useLocalSearchParams<{ key: string }>();
   return <BusinessGate>{(b) => <SupplierView business={b} supplierKey={key} />}</BusinessGate>;
 }
 
 function SupplierView({ business, supplierKey }: { business: Business; supplierKey: string }) {
   const { c, t, lang, scopeKey } = useApp();
+  const ordersOn = useFeature('orders');
   const { data, error, loading, refreshing, refresh } = useLoad(() => loadSupplier(business.id, supplierKey), `${scopeKey}:${supplierKey}`);
 
   if (loading) return <Loading />;
@@ -57,7 +60,7 @@ function SupplierView({ business, supplierKey }: { business: Business; supplierK
           </View>
 
           <View style={{ gap: space.sm }}>
-            {s.low > 0 ? (
+            {s.low > 0 && ordersOn ? (
               <Button title={t.orderProducts(s.low)} onPress={() => router.push({ pathname: '/new-order', params: { supplier: s.key } })} />
             ) : null}
             <Row style={{ gap: space.sm }}>
@@ -257,3 +260,5 @@ const styles = StyleSheet.create({
   line: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md },
   input: { minHeight: 48, borderWidth: 1, borderRadius: radius.md, paddingHorizontal: space.md, fontSize: 16 },
 });
+
+export default gated('suppliers', SupplierScreen);

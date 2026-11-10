@@ -10,8 +10,9 @@ import { loadOrders, type Business } from '@/lib/data';
 import { space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
-export default function OrdersScreen() {
+function OrdersScreen() {
   const { c, t } = useApp();
   return (
     <View style={{ flex: 1 }}>
@@ -123,3 +124,5 @@ function Orders({ business }: { business: Business }) {
     </View>
   );
 }
+
+export default gated('orders', OrdersScreen);

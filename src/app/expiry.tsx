@@ -11,9 +11,10 @@ import { qty } from '@/lib/stock';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /** Batches with an expiry date still in stock, soonest first, grouped like the website. */
-export default function ExpiryScreen() {
+function ExpiryScreen() {
   const { t } = useApp();
   return (
     <>
@@ -128,3 +129,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md },
   discard: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: radius.pill },
 });
+
+export default gated('expiry', ExpiryScreen);

@@ -13,7 +13,9 @@ import { loadAlerts, loadOrders, loadProductRows, type Business } from '@/lib/da
 import type { Risk } from '@/lib/stock';
 import { space, topBarSpace } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
+import { AppBanner } from '@/components/app-gate';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 type IconType = ComponentType<{ size?: number; color?: string; weight?: 'regular' | 'bold' | 'fill' | 'duotone' }>;
 
@@ -33,6 +35,9 @@ function greeting(t: ReturnType<typeof useApp>['t']) {
 
 function Overview({ business }: { business: Business }) {
   const { c, t, rtl, scopeKey } = useApp();
+  const scanOn = useFeature('scan');
+  const ordersOn = useFeature('orders');
+  const supportOn = useFeature('support');
   const insets = useSafeAreaInsets();
   const { data, error, loading, refreshing, refresh } = useLoad(
     async () => {
@@ -107,12 +112,14 @@ function Overview({ business }: { business: Business }) {
     { risk: 'ordered', label: t.onOrder, Icon: Truck },
     { risk: 'healthy', label: t.healthy, Icon: CheckCircle },
   ];
-  const actions: { label: string; Icon: IconType; go: () => void; badge?: number }[] = [
-    { label: t.quickScan, Icon: Barcode, go: () => router.push('/scan') },
-    { label: t.quickRecord, Icon: ArrowsDownUp, go: () => router.push('/products') },
-    { label: t.quickOrders, Icon: Truck, go: () => router.push('/orders'), badge: data.drafts.length },
-    { label: t.quickSupport, Icon: ChatCircleDots, go: () => router.push('/support') },
-  ];
+  const actions = (
+    [
+      scanOn && { label: t.quickScan, Icon: Barcode, go: () => router.push('/scan') },
+      { label: t.quickRecord, Icon: ArrowsDownUp, go: () => router.push('/products') },
+      ordersOn && { label: t.quickOrders, Icon: Truck, go: () => router.push('/orders'), badge: data.drafts.length },
+      supportOn && { label: t.quickSupport, Icon: ChatCircleDots, go: () => router.push('/support') },
+    ] as ({ label: string; Icon: IconType; go: () => void; badge?: number } | false)[]
+  ).filter((a): a is { label: string; Icon: IconType; go: () => void; badge?: number } => Boolean(a));
 
   return (
     <ScrollView
@@ -122,6 +129,7 @@ function Overview({ business }: { business: Business }) {
 
       {/* Everything below the header sits on one soft rounded panel */}
       <View style={[panel(c), { marginTop: 0, paddingBottom: space.lg }]}>
+        <AppBanner />
         {/* Status tiles */}
         <View style={styles.tiles}>
           {tiles.map(({ risk, label, Icon }) => {
@@ -170,7 +178,7 @@ function Overview({ business }: { business: Business }) {
           ))}
         </View>
 
-        {data.drafts.length > 0 && (
+        {ordersOn && data.drafts.length > 0 && (
           <Card onPress={() => router.push('/orders')} style={{ borderColor: c.brand, backgroundColor: c.brandSoft, marginTop: space.lg }}>
             <Row style={{ gap: space.md }}>
               <Truck size={22} color={c.brandDeep} weight="duotone" />

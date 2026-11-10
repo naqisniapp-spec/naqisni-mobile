@@ -24,6 +24,7 @@ import {
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 /** Add a product (no id) or edit one (id) — the same fields and rules as naqisni.com. */
 export default function ProductFormScreen() {
@@ -41,6 +42,7 @@ function EditProduct({ business, id }: { business: Business; id: string }) {
 
 function ProductForm({ business, product }: { business: Business; product?: Product }) {
   const { c, t, session, allStores, stores } = useApp();
+  const scanOn = useFeature('scan');
   const [values, setValues] = useState<ProductValues>(product ? productToValues(product) : emptyProduct);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -170,6 +172,7 @@ function ProductForm({ business, product }: { business: Business; product?: Prod
             <Field label={t.barcode}>
               <Row style={{ gap: space.sm }}>
                 <Input style={{ flex: 1 }} value={values.barcode} onChangeText={(v) => set('barcode', v)} keyboardType="number-pad" />
+                {scanOn && (
                 <Pressable
                   onPress={scanBarcode}
                   accessibilityRole="button"
@@ -180,6 +183,7 @@ function ProductForm({ business, product }: { business: Business; product?: Prod
                     {t.scan}
                   </Text>
                 </Pressable>
+                )}
               </Row>
             </Field>
             <Field label={t.description}>

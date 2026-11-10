@@ -11,11 +11,12 @@ import { qty } from '@/lib/stock';
 import { loadHistory, MOVE_TYPES, type HistoryMove, type MoveType } from '@/lib/stock-tools';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 const PERIODS = [7, 30, 90, null] as const;
 
 /** Every stock change in the store being worked in: what, how many and when. */
-export default function HistoryScreen() {
+function HistoryScreen() {
   const { t } = useApp();
   return (
     <>
@@ -210,3 +211,5 @@ const styles = StyleSheet.create({
   pill: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md },
 });
+
+export default gated('history', HistoryScreen);

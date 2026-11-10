@@ -10,12 +10,13 @@ import { findByBarcode } from '@/lib/data';
 import { deliver, stopWaiting } from '@/lib/picker';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /**
  * Scan a barcode (or SKU QR) and open that product. With `pick=1` (from the
  * product form) the code is handed back to the form instead.
  */
-export default function ScanScreen() {
+function ScanScreen() {
   const { t, business } = useApp();
   const { pick } = useLocalSearchParams<{ pick?: string }>();
   const insets = useSafeAreaInsets();
@@ -91,3 +92,5 @@ const styles = StyleSheet.create({
   close: { position: 'absolute', start: space.lg, backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill },
   notice: { position: 'absolute', left: space.xl, right: space.xl, backgroundColor: 'rgba(0,0,0,0.7)', padding: space.lg, borderRadius: radius.lg },
 });
+
+export default gated('scan', ScanScreen);
