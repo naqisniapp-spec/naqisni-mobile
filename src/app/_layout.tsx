@@ -9,24 +9,19 @@ import * as Notifications from 'expo-notifications';
 import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { Intro } from '@/components/intro';
 import { Loading } from '@/components/ui';
 import { refreshPush } from '@/lib/push';
 import { AppProvider, useApp } from '@/providers/app-provider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
-function Navigator() {
+function Navigator({ fontsReady }: { fontsReady: boolean }) {
   const { ready, session, business, lang, c, dark, t } = useApp();
-  const [fontsLoaded, fontError] = useFonts({ IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold, IBMPlexSans_700Bold });
-  const fontsReady = fontsLoaded || Boolean(fontError);
-
-  useEffect(() => {
-    if (ready && fontsReady) SplashScreen.hideAsync().catch(() => undefined);
-  }, [ready, fontsReady]);
 
   // Keep this phone's notification settings (language) up to date.
   useEffect(() => {
@@ -101,11 +96,32 @@ function NotificationTaps() {
   return null;
 }
 
+/**
+ * The app, with the animated intro (logo + drifting boxes) on top while it loads.
+ * The native splash is the same navy, so handing over to the intro is seamless.
+ */
+function Shell() {
+  const { ready } = useApp();
+  const [fontsLoaded, fontError] = useFonts({ IBMPlexSans_400Regular, IBMPlexSans_500Medium, IBMPlexSans_600SemiBold, IBMPlexSans_700Bold });
+  const fontsReady = fontsLoaded || Boolean(fontError);
+  const [introDone, setIntroDone] = useState(false);
+  const hideNativeSplash = useCallback(() => {
+    SplashScreen.hideAsync().catch(() => undefined);
+  }, []);
+  const finishIntro = useCallback(() => setIntroDone(true), []);
+  return (
+    <View style={{ flex: 1 }}>
+      <Navigator fontsReady={fontsReady} />
+      {introDone ? null : <Intro appReady={ready && fontsReady} onShown={hideNativeSplash} onDone={finishIntro} />}
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProvider>
-        <Navigator />
+        <Shell />
       </AppProvider>
     </GestureHandlerRootView>
   );

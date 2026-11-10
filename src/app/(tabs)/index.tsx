@@ -1,6 +1,5 @@
-import { router, useFocusEffect } from 'expo-router';
-import { setStatusBarStyle } from 'expo-status-bar';
-import { useCallback, type ComponentType } from 'react';
+import { router } from 'expo-router';
+import type { ComponentType } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,23 +11,14 @@ import { StorePill } from '@/components/screen-header';
 import { Card, ErrorState, Loading, riskColors, Row, Text } from '@/components/ui';
 import { loadAlerts, loadOrders, loadProductRows, type Business } from '@/lib/data';
 import type { Risk } from '@/lib/stock';
-import { palette, radius, space, topBarSpace } from '@/lib/theme';
+import { palette, space, topBarSpace } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
-
-const INK = palette.light.ink;
 
 type IconType = ComponentType<{ size?: number; color?: string; weight?: 'regular' | 'bold' | 'fill' | 'duotone' }>;
 
 export default function OverviewScreen() {
-  const { c, dark } = useApp();
-  // Light status bar text over the dark header; back to normal on other tabs.
-  useFocusEffect(
-    useCallback(() => {
-      setStatusBarStyle('light');
-      return () => setStatusBarStyle(dark ? 'light' : 'dark');
-    }, [dark])
-  );
+  const { c } = useApp();
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <BusinessGate>{(b) => <Overview business={b} />}</BusinessGate>
@@ -42,7 +32,7 @@ function greeting(t: ReturnType<typeof useApp>['t']) {
 }
 
 function Overview({ business }: { business: Business }) {
-  const { c, t, rtl, scopeKey } = useApp();
+  const { c, t, rtl, dark, scopeKey } = useApp();
   const insets = useSafeAreaInsets();
   const { data, error, loading, refreshing, refresh } = useLoad(
     async () => {
@@ -62,34 +52,37 @@ function Overview({ business }: { business: Business }) {
   const critical = count('critical');
   const warning = count('warning');
 
+  // The header sits straight on the page colour (light or dark), with soft green glows behind it.
   const hero = (
     <View style={[styles.hero, { paddingTop: insets.top + topBarSpace + space.md }]}>
+      <View pointerEvents="none" style={[styles.glow, { width: 96, height: 96, end: 18, top: insets.top + 6, backgroundColor: c.brand, opacity: dark ? 0.16 : 0.18 }]} />
+      <View pointerEvents="none" style={[styles.glow, { width: 60, height: 60, end: 8, top: insets.top + 122, backgroundColor: c.brand, opacity: dark ? 0.1 : 0.12 }]} />
+      <View pointerEvents="none" style={[styles.glow, { width: 66, height: 66, start: -22, bottom: -6, backgroundColor: c.brand, opacity: dark ? 0.12 : 0.14 }]} />
       <Row style={{ justifyContent: 'space-between', gap: space.md }}>
-        <Logo width={104} />
-        <StorePill onDark />
+        <Logo width={108} />
+        <StorePill />
       </Row>
-      <Text size={15} style={{ color: 'rgba(255,255,255,0.65)', marginTop: space.xl }}>
+      <Text size={15} tone="slate" style={{ marginTop: space.xl }}>
         {greeting(t)}
       </Text>
-      <Text size={24} weight="700" numberOfLines={1} style={{ color: '#FFFFFF', marginTop: 2 }}>
+      <Text size={28} weight="700" numberOfLines={1} style={{ marginTop: 2, letterSpacing: -0.4 }}>
         {business.name}
       </Text>
       {data && (
-        <View style={styles.summary}>
+        <Row style={{ gap: space.sm, marginTop: space.sm }}>
           {critical > 0 ? (
-            <Warning size={22} color={palette.dark.alert} weight="fill" />
+            <Warning size={18} color={c.alert} weight="fill" />
           ) : (
-            <CheckCircle size={22} color={c.brand} weight="fill" />
+            <CheckCircle size={18} color={c.brandDeep} weight="fill" />
           )}
-          <View style={{ flex: 1 }}>
-            <Text weight="600" style={{ color: '#FFFFFF' }}>
-              {critical > 0 ? t.toReorder(critical) : warning > 0 ? t.lowCount(warning) : t.allHealthyTitle}
-            </Text>
-            <Text size={13} style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {critical > 0 && warning > 0 ? t.lowSoon(warning) : critical === 0 && warning === 0 ? t.allHealthySub : ''}
-            </Text>
-          </View>
-        </View>
+          <Text tone="slate" numberOfLines={2} style={{ flex: 1 }}>
+            {critical > 0
+              ? `${t.toReorder(critical)}${warning > 0 ? ` · ${t.lowSoon(warning)}` : ''}`
+              : warning > 0
+                ? t.lowCount(warning)
+                : `${t.allHealthyTitle} · ${t.allHealthySub}`}
+          </Text>
+        </Row>
       )}
     </View>
   );
@@ -129,9 +122,10 @@ function Overview({ business }: { business: Business }) {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.brand} progressViewOffset={insets.top} />}>
       {hero}
 
-      <View style={styles.body}>
-        {/* Status tiles, lifted onto the dark header */}
-        <View style={[styles.tiles, { marginTop: -40 }]}>
+      {/* Everything below the header sits on one soft rounded panel */}
+      <View style={[styles.body, { backgroundColor: dark ? palette.light.ink : 'rgba(255,255,255,0.7)', borderColor: c.hairline }]}>
+        {/* Status tiles */}
+        <View style={styles.tiles}>
           {tiles.map(({ risk, label, Icon }) => {
             const { bg, fg } = riskColors(risk, c);
             return (
@@ -141,17 +135,17 @@ function Overview({ business }: { business: Business }) {
                 style={({ pressed }) => [styles.tile, { backgroundColor: c.card, borderColor: c.hairline, opacity: pressed ? 0.8 : 1 }]}
                 accessibilityRole="button"
                 accessibilityLabel={`${label}: ${count(risk)}`}>
-                <View style={[styles.tileIcon, { backgroundColor: bg }]}>
-                  <Icon size={20} color={fg} weight="bold" />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text size={22} weight="700" style={{ lineHeight: 26 }}>
+                <Row style={{ gap: space.md }}>
+                  <View style={[styles.tileIcon, { backgroundColor: bg }]}>
+                    <Icon size={20} color={fg} weight="bold" />
+                  </View>
+                  <Text size={30} weight="700" style={{ lineHeight: 36 }}>
                     {count(risk)}
                   </Text>
-                  <Text size={12} tone="slate" weight="500" numberOfLines={1}>
-                    {label}
-                  </Text>
-                </View>
+                </Row>
+                <Text size={14} tone="slate" weight="500" numberOfLines={1} style={{ marginTop: space.md }}>
+                  {label}
+                </Text>
               </Pressable>
             );
           })}
@@ -254,39 +248,27 @@ function SectionTitle({ title, onSeeAll }: { title: string; onSeeAll?: () => voi
 }
 
 const styles = StyleSheet.create({
-  hero: {
-    backgroundColor: INK,
-    paddingHorizontal: space.lg,
-    paddingBottom: 60,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-  },
-  summary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    marginTop: space.lg,
+  hero: { paddingHorizontal: space.xl, paddingBottom: space.xl, overflow: 'hidden' },
+  glow: { position: 'absolute', borderRadius: 999 },
+  body: {
+    marginHorizontal: space.md,
     padding: space.md,
-    borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-  },
-  body: { paddingHorizontal: space.lg },
-  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  tile: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    borderRadius: radius.lg,
+    paddingBottom: space.lg,
+    borderRadius: 28,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: space.md,
-    paddingVertical: 14,
+  },
+  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
+  tile: {
+    flexBasis: '45%',
+    flexGrow: 1,
+    borderRadius: 22,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: space.lg,
     shadowColor: '#10182B',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.06,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    elevation: 1,
   },
   tileIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   actions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xl },
