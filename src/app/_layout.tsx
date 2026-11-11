@@ -94,9 +94,10 @@ function NotificationTaps() {
     const data = lastTap?.notification.request.content.data;
     const url = data?.url;
     const campaign = data?.campaign;
-    // A message from Naqisni (naqisni.com/admin/mobile): open it in the inbox.
+    // A message from Naqisni (naqisni.com/admin/mobile): open the inbox. It stays
+    // unread (and counted on the bell) until it is opened there.
     if (typeof campaign === 'string') {
-      router.push({ pathname: '/inbox/[id]', params: { id: campaign } });
+      router.push('/inbox');
       Notifications.clearLastNotificationResponse();
       return;
     }
