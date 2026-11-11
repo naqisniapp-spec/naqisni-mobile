@@ -71,6 +71,8 @@ function Navigator({ fontsReady }: { fontsReady: boolean }) {
           <Stack.Screen name="photo" options={{ presentation: 'fullScreenModal', headerShown: false }} />
           <Stack.Screen name="record" options={{ presentation: 'formSheet', title: t.recordChange, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />
           <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+          <Stack.Screen name="inbox/index" options={{ title: t.inbox }} />
+          <Stack.Screen name="inbox/[id]" options={{ title: '' }} />
           <Stack.Screen name="support/index" options={{ title: t.support }} />
           <Stack.Screen name="support/[id]" options={{ title: '' }} />
           <Stack.Screen name="support/new" options={{ presentation: 'formSheet', title: t.newTicket, sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true }} />
@@ -89,7 +91,15 @@ function Navigator({ fontsReady }: { fontsReady: boolean }) {
 function NotificationTaps() {
   const lastTap = Notifications.useLastNotificationResponse();
   useEffect(() => {
-    const url = lastTap?.notification.request.content.data?.url;
+    const data = lastTap?.notification.request.content.data;
+    const url = data?.url;
+    const campaign = data?.campaign;
+    // A message from Naqisni (naqisni.com/admin/mobile): open it in the inbox.
+    if (typeof campaign === 'string') {
+      router.push({ pathname: '/inbox/[id]', params: { id: campaign } });
+      Notifications.clearLastNotificationResponse();
+      return;
+    }
     if (typeof url !== 'string') return;
     if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
     else if (url === '/alerts') router.push('/alerts');

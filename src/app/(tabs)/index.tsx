@@ -14,6 +14,7 @@ import type { Risk } from '@/lib/stock';
 import { space, topBarSpace } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { AppBanner } from '@/components/app-gate';
+import { InboxBell } from '@/components/inbox-bell';
 import { useApp } from '@/providers/app-provider';
 import { useFeature } from '@/providers/remote-config-provider';
 
@@ -63,7 +64,10 @@ function Overview({ business }: { business: Business }) {
       <Glows top={insets.top} />
       <Row style={{ justifyContent: 'space-between', gap: space.md }}>
         <Logo width={108} />
-        <StorePill />
+        <Row style={{ gap: space.sm }}>
+          <StorePill />
+          <InboxBell />
+        </Row>
       </Row>
       <Text size={15} tone="slate" style={{ marginTop: space.xl }}>
         {greeting(t)}
