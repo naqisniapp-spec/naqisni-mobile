@@ -225,6 +225,41 @@ export async function acknowledgeAlert(id: string) {
   if (error) throw new Error(error.message);
 }
 
+/** An unusual stock movement (website migration 0070). Owners only. */
+export type MovementAlert = {
+  id: string;
+  product_id: string | null;
+  product_name: string | null;
+  store_id: string | null;
+  movement_type: string;
+  quantity: number;
+  occurred_at: string;
+  severity: 'warning' | 'critical';
+  message: string;
+  reviewed_at: string | null;
+  review_outcome: 'expected' | 'problem' | null;
+  created_at: string;
+};
+
+export async function loadMovementAlerts(businessId: string, open: boolean): Promise<MovementAlert[]> {
+  let q = supabase
+    .from('movement_alerts')
+    .select('id, product_id, product_name, store_id, movement_type, quantity, occurred_at, severity, message, reviewed_at, review_outcome, created_at')
+    .eq('business_id', businessId)
+    .order('created_at', { ascending: false })
+    .limit(100);
+  q = open ? q.is('reviewed_at', null) : q.not('reviewed_at', 'is', null);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as MovementAlert[];
+}
+
+/** null re-opens the alert. */
+export async function reviewMovementAlert(id: string, outcome: 'expected' | 'problem' | null) {
+  const { error } = await supabase.rpc('review_movement_alert', { p_id: id, p_outcome: outcome, p_note: null });
+  if (error) throw new Error(error.message);
+}
+
 export async function loadOrders(businessId: string): Promise<Order[]> {
   const { data, error } = await supabase
     .from('purchase_orders')

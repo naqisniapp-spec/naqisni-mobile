@@ -91,6 +91,7 @@ function NotificationTaps() {
     if (typeof url !== 'string') return;
     if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
     else if (url === '/alerts') router.push('/alerts');
+    else if (url === '/alerts?tab=movements') router.push({ pathname: '/alerts', params: { tab: 'movements' } });
     Notifications.clearLastNotificationResponse();
   }, [lastTap]);
   return null;
