@@ -12,6 +12,8 @@ import { loadCountDraft, loadCountProducts, saveCountDraft, saveStockCount, type
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
+import { gated } from '@/components/app-gate';
 
 type Filter = 'all' | 'todo' | 'diff';
 
@@ -27,7 +29,7 @@ const num = (v: string | undefined) => {
  * (the same save_stock_count as naqisni.com). The count is kept on the phone
  * until it is saved.
  */
-export default function CountScreen() {
+function CountScreen() {
   const { t, allStores, stores } = useApp();
   return (
     <>
@@ -46,6 +48,7 @@ export default function CountScreen() {
 
 function Count({ business }: { business: Business }) {
   const { c, t, store, stores, scopeKey } = useApp();
+  const scanOn = useFeature('scan');
   const storeId = store?.id ?? 'main';
   const { data, error, loading, refresh } = useLoad(() => loadCountProducts(business.id), scopeKey);
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -170,6 +173,7 @@ function Count({ business }: { business: Business }) {
                   style={[styles.search, { color: c.ink }]}
                 />
               </View>
+              {scanOn && (
               <Pressable
                 onPress={scan}
                 accessibilityRole="button"
@@ -177,6 +181,7 @@ function Count({ business }: { business: Business }) {
                 style={({ pressed }) => [styles.scanBtn, { backgroundColor: c.ink, opacity: pressed ? 0.8 : 1 }]}>
                 <Barcode size={20} color={c.brand} weight="bold" />
               </Pressable>
+              )}
             </View>
             <View style={{ flexDirection: 'row', gap: space.sm }}>
               {filters.map((f) => {
@@ -266,3 +271,5 @@ const styles = StyleSheet.create({
   input: { width: 92, minHeight: 48, borderWidth: 1.5, borderRadius: radius.md, paddingHorizontal: space.sm, fontSize: 18, fontWeight: '700', textAlign: 'center' },
   footer: { padding: space.lg, paddingBottom: space.xxl, gap: space.sm, borderTopWidth: StyleSheet.hairlineWidth },
 });
+
+export default gated('count', CountScreen);

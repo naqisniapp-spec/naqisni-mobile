@@ -11,6 +11,7 @@ import { webApi } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 type ApproveResult = { sent?: unknown; waitingFor?: string[] };
 
@@ -19,7 +20,7 @@ type ApproveResult = { sent?: unknown; waitingFor?: string[] };
  * approval runs on naqisni.com (POST /api/orders/:id/approve) so the supplier
  * email/WhatsApp and the approver list work exactly like on the website.
  */
-export default function OrderScreen() {
+function OrderScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { c, t, lang, scopeKey, business } = useApp();
   const { data: order, error, loading, refresh, reload } = useLoad(() => loadOrder(id), `${scopeKey}:${id}`);
@@ -220,3 +221,5 @@ const styles = StyleSheet.create({
   hint: { padding: space.md, borderRadius: radius.md },
   footer: { position: 'absolute', left: 0, right: 0, bottom: 0, padding: space.lg, paddingBottom: space.xxl, borderTopWidth: StyleSheet.hairlineWidth },
 });
+
+export default gated('orders', OrderScreen);

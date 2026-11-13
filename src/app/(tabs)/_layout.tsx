@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { aiEnabled } from '@/lib/ai';
 
 import { useApp } from '@/providers/app-provider';
+import { useFeature } from '@/providers/remote-config-provider';
 
 // Phosphor icons (the same family as naqisni.com), rendered to PNGs so the
 // native tab bar can use them: outline when idle, filled when selected.
@@ -18,6 +19,7 @@ const TAB_ICONS = {
 /** Native tab bar (UITabBar on iOS, Material bottom navigation on Android). */
 export default function TabsLayout() {
   const { c, t, business } = useApp();
+  const askOn = useFeature('ask_ai');
   // Ask AI only shows when AI is switched on for this business.
   const [aiFor, setAiFor] = useState<string | null>(null);
   const businessId = business?.id ?? null;
@@ -44,7 +46,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>{t.tabProducts}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={TAB_ICONS.products} renderingMode="template" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="assistant" hidden={!aiOn}>
+      <NativeTabs.Trigger name="assistant" hidden={!aiOn || !askOn}>
         <NativeTabs.Trigger.Label>{t.tabAsk}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={TAB_ICONS.ask} renderingMode="template" />
       </NativeTabs.Trigger>

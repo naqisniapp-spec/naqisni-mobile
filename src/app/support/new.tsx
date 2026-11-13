@@ -6,9 +6,10 @@ import { Button, Text } from '@/components/ui';
 import { MAX_MESSAGE_LENGTH, openTicket } from '@/lib/support';
 import { radius, space } from '@/lib/theme';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /** Open a ticket — one per problem, like on naqisni.com. */
-export default function NewTicketScreen() {
+function NewTicketScreen() {
   const { c, t } = useApp();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -64,3 +65,5 @@ export default function NewTicketScreen() {
 const styles = StyleSheet.create({
   input: { minHeight: 50, borderWidth: 1, borderRadius: radius.md, paddingHorizontal: space.lg, fontSize: 16 },
 });
+
+export default gated('support', NewTicketScreen);

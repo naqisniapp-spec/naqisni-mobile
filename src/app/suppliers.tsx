@@ -10,9 +10,10 @@ import { loadSuppliers } from '@/lib/suppliers';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 /** Every supplier from the products and orders, those with products running low first. */
-export default function SuppliersScreen() {
+function SuppliersScreen() {
   const { t } = useApp();
   return (
     <>
@@ -84,3 +85,5 @@ const styles = StyleSheet.create({
   search: { flex: 1, minHeight: 46, fontSize: 16 },
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill },
 });
+
+export default gated('suppliers', SuppliersScreen);

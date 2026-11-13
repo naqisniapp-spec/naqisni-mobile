@@ -12,11 +12,12 @@ import { WEB_URL } from '@/lib/supabase';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
+import { gated } from '@/components/app-gate';
 
 const PERIODS = [7, 30, 90] as const;
 
 /** What the stock is worth, what moves fast and what sits on the shelf — the website's Reports page, for the phone. */
-export default function ReportsScreen() {
+function ReportsScreen() {
   const { t } = useApp();
   return (
     <>
@@ -167,3 +168,5 @@ const styles = StyleSheet.create({
   bar: { height: 6, borderRadius: 3, overflow: 'hidden' },
   barFill: { height: 6, borderRadius: 3 },
 });
+
+export default gated('reports', ReportsScreen);

@@ -13,10 +13,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppGate } from '@/components/app-gate';
 import { Intro } from '@/components/intro';
 import { Loading } from '@/components/ui';
 import { refreshPush } from '@/lib/push';
 import { AppProvider, useApp } from '@/providers/app-provider';
+import { RemoteConfigProvider } from '@/providers/remote-config-provider';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -69,6 +71,8 @@ function Navigator({ fontsReady }: { fontsReady: boolean }) {
           <Stack.Screen name="photo" options={{ presentation: 'fullScreenModal', headerShown: false }} />
           <Stack.Screen name="record" options={{ presentation: 'formSheet', title: t.recordChange, sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true }} />
           <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+          <Stack.Screen name="inbox/index" options={{ title: t.inbox }} />
+          <Stack.Screen name="inbox/[id]" options={{ title: '' }} />
           <Stack.Screen name="support/index" options={{ title: t.support }} />
           <Stack.Screen name="support/[id]" options={{ title: '' }} />
           <Stack.Screen name="support/new" options={{ presentation: 'formSheet', title: t.newTicket, sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true }} />
@@ -87,11 +91,26 @@ function Navigator({ fontsReady }: { fontsReady: boolean }) {
 function NotificationTaps() {
   const lastTap = Notifications.useLastNotificationResponse();
   useEffect(() => {
-    const url = lastTap?.notification.request.content.data?.url;
+    const data = lastTap?.notification.request.content.data;
+    const url = data?.url;
+    const campaign = data?.campaign;
+    // A message from Naqisni (naqisni.com/admin/mobile): open the inbox. It stays
+    // unread (and counted on the bell) until it is opened there.
+    if (typeof campaign === 'string') {
+      router.push('/inbox');
+      Notifications.clearLastNotificationResponse();
+      return;
+    }
     if (typeof url !== 'string') return;
     if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
     else if (url === '/alerts') router.push('/alerts');
     else if (url === '/alerts?tab=movements') router.push({ pathname: '/alerts', params: { tab: 'movements' } });
+    // Notifications sent by Naqisni from naqisni.com/admin/mobile.
+    else if (url === '/products') router.push('/products');
+    else if (url === '/orders') router.push('/orders');
+    else if (url === '/support') router.push('/support');
+    else if (url === '/more') router.push('/more');
+    else if (url === '/') router.push('/');
     Notifications.clearLastNotificationResponse();
   }, [lastTap]);
   return null;
@@ -112,7 +131,9 @@ function Shell() {
   const finishIntro = useCallback(() => setIntroDone(true), []);
   return (
     <View style={{ flex: 1 }}>
-      <Navigator fontsReady={fontsReady} />
+      <AppGate>
+        <Navigator fontsReady={fontsReady} />
+      </AppGate>
       {introDone ? null : <Intro appReady={ready && fontsReady} onShown={hideNativeSplash} onDone={finishIntro} />}
     </View>
   );
@@ -122,7 +143,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProvider>
-        <Shell />
+        <RemoteConfigProvider>
+          <Shell />
+        </RemoteConfigProvider>
       </AppProvider>
     </GestureHandlerRootView>
   );
