@@ -1,7 +1,8 @@
 /**
  * Notifications inbox: every message Naqisni sent from
  * naqisni.com/admin/mobile → Notifications to this customer
- * (naqisni-web migration 0069). Read state is kept per person.
+ * (naqisni-web migration 0069), and for owners the unusual stock movement
+ * alerts (migration 0071). Read state is kept per person.
  */
 import type { Href } from 'expo-router';
 
@@ -44,11 +45,20 @@ export function messageBody(m: InboxMessage, lang: Lang) {
   return (lang === 'ar' && m.body_ar?.trim()) || m.body;
 }
 
+/** An unusual stock movement alert (owners only), not a message from the admin. */
+export const MOVEMENTS_URL = '/alerts?tab=movements';
+
+export function isMovementAlert(m: InboxMessage) {
+  return m.open_url === MOVEMENTS_URL;
+}
+
 /** The page the admin chose for "Tapping it opens"; null for the Overview. */
 export function messageTarget(m: InboxMessage): Href | null {
   switch (m.open_url) {
     case '/alerts':
       return '/alerts';
+    case MOVEMENTS_URL:
+      return { pathname: '/alerts', params: { tab: 'movements' } };
     case '/products':
       return '/products';
     case '/orders':

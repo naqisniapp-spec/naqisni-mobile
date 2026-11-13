@@ -104,6 +104,7 @@ function NotificationTaps() {
     if (typeof url !== 'string') return;
     if (url.startsWith('/product/')) router.push({ pathname: '/product/[id]', params: { id: url.slice('/product/'.length) } });
     else if (url === '/alerts') router.push('/alerts');
+    else if (url === '/alerts?tab=movements') router.push({ pathname: '/alerts', params: { tab: 'movements' } });
     // Notifications sent by Naqisni from naqisni.com/admin/mobile.
     else if (url === '/products') router.push('/products');
     else if (url === '/orders') router.push('/orders');

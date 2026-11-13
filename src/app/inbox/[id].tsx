@@ -2,9 +2,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Megaphone } from '@/components/icons';
+import { Megaphone, Warning } from '@/components/icons';
 import { Button, Card, ErrorState, Loading, panel, Text } from '@/components/ui';
-import { loadInbox, markInboxRead, messageBody, messageTarget, messageTitle } from '@/lib/inbox';
+import { isMovementAlert, loadInbox, markInboxRead, messageBody, messageTarget, messageTitle } from '@/lib/inbox';
 import { space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
@@ -33,8 +33,9 @@ export default function InboxMessageScreen() {
     );
 
   const target = messageTarget(data);
+  const movement = isMovementAlert(data);
   const pageName =
-    data.open_url === '/alerts'
+    data.open_url === '/alerts' || movement
       ? t.tabAlerts
       : data.open_url === '/products'
         ? t.tabProducts
@@ -50,8 +51,8 @@ export default function InboxMessageScreen() {
   return (
     <ScrollView contentContainerStyle={[panel(c), { gap: space.lg, marginBottom: space.xxl * 2 }]}>
       <View style={styles.from}>
-        <View style={[styles.icon, { backgroundColor: c.brandSoft }]}>
-          <Megaphone size={22} color={c.brandDeep} weight="duotone" />
+        <View style={[styles.icon, { backgroundColor: movement ? c.amberSoft : c.brandSoft }]}>
+          {movement ? <Warning size={22} color={c.amber} weight="bold" /> : <Megaphone size={22} color={c.brandDeep} weight="duotone" />}
         </View>
         <View style={{ flex: 1 }}>
           <Text weight="700">{t.inboxFrom}</Text>
