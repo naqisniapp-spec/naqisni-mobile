@@ -6,7 +6,7 @@ import { BusinessGate } from '@/components/business-gate';
 import { CheckCircle, TrendDown, Warning } from '@/components/icons';
 import { ScreenHeader } from '@/components/screen-header';
 import { Card, Empty, ErrorState, Loading, panel, Row, Segmented, Text } from '@/components/ui';
-import { acknowledgeAlert, loadAlerts, loadMovementAlerts, reviewMovementAlert, type Business, type MovementAlert } from '@/lib/data';
+import { acknowledgeAlert, countOpenMovementAlerts, loadAlerts, loadMovementAlerts, reviewMovementAlert, type Business, type MovementAlert } from '@/lib/data';
 import { radius, space } from '@/lib/theme';
 import { useLoad } from '@/lib/use-load';
 import { useApp } from '@/providers/app-provider';
@@ -41,6 +41,10 @@ function Alerts({ business }: { business: Business }) {
     `${scopeKey}:${tab}`
   );
   const [seen, setSeen] = useState<Set<string>>(new Set());
+  // Movements still to check, shown on the Unusual tab (refreshed after each review).
+  const [reviews, setReviews] = useState(0);
+  const toCheck = useLoad(() => (isOwner ? countOpenMovementAlerts(business.id) : Promise.resolve(0)), `movcount:${business.id}:${reviews}`);
+  const openMoves = toCheck.data ?? 0;
 
   async function ack(id: string) {
     setSeen((s) => new Set(s).add(id));
@@ -60,12 +64,12 @@ function Alerts({ business }: { business: Business }) {
           options={[
             { value: 'open', label: t.openAlerts },
             { value: 'resolved', label: t.resolved },
-            ...(isOwner ? [{ value: 'movements' as const, label: t.unusualTab }] : []),
+            ...(isOwner ? [{ value: 'movements' as const, label: openMoves ? `${t.unusualTab} (${openMoves})` : t.unusualTab }] : []),
           ]}
         />
       </View>
       {tab === 'movements' ? (
-        <Movements business={business} />
+        <Movements business={business} onReviewed={() => setReviews((n) => n + 1)} />
       ) : loading ? (
         <Loading />
       ) : error ? (
@@ -119,7 +123,7 @@ function Alerts({ business }: { business: Business }) {
 }
 
 /** Unusual stock movements (owner only): to check first, then reviewed. */
-function Movements({ business }: { business: Business }) {
+function Movements({ business, onReviewed }: { business: Business; onReviewed: () => void }) {
   const { c, t, lang, allStores, storeName } = useApp();
   const { data, error, loading, refreshing, refresh, reload } = useLoad(async () => {
     const [open, done] = await Promise.all([loadMovementAlerts(business.id, true), loadMovementAlerts(business.id, false)]);
@@ -131,6 +135,7 @@ function Movements({ business }: { business: Business }) {
     setLocal((s) => ({ ...s, [id]: outcome ?? 'open' }));
     try {
       await reviewMovementAlert(id, outcome);
+      onReviewed();
     } catch {
       setLocal((s) => {
         const next = { ...s };

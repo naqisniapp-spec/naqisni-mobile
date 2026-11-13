@@ -254,6 +254,17 @@ export async function loadMovementAlerts(businessId: string, open: boolean): Pro
   return (data ?? []) as MovementAlert[];
 }
 
+/** How many unusual movements the owner still has to check. */
+export async function countOpenMovementAlerts(businessId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('movement_alerts')
+    .select('id', { count: 'exact', head: true })
+    .eq('business_id', businessId)
+    .is('reviewed_at', null);
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
+
 /** null re-opens the alert. */
 export async function reviewMovementAlert(id: string, outcome: 'expected' | 'problem' | null) {
   const { error } = await supabase.rpc('review_movement_alert', { p_id: id, p_outcome: outcome, p_note: null });
